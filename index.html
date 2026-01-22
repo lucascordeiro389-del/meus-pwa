@@ -298,6 +298,32 @@ html, body{ overflow-x: hidden; }
     font-size: 9px;  /* 1px menor para caber */
   }
 }
+.conta-del{
+  border:none;
+  background:none;
+  cursor:pointer;
+  opacity:.45;
+  font-size:14px;
+  padding:4px;
+}
+.conta-del:hover{opacity:.8}
+.obj-card{ position:relative; }
+.obj-del{
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:20px;
+  height:20px;
+  border:none;
+  border-radius:6px;
+  background:var(--background);
+  color:var(--text-medium);
+  cursor:pointer;
+  font-size:12px;
+  line-height:20px;
+  opacity:.6;
+}
+.obj-del:hover{opacity:1}
 
   </style>
 </head>
@@ -446,6 +472,29 @@ html, body{ overflow-x: hidden; }
                 </div>
               </div>
               <div class="form-box closed" id="boxNovoObj">
+                <div class="form-box closed" id="boxNovoCartao">
+  <div class="form-head" onclick="toggleBox('boxNovoCartao')">
+    <span class="form-head-icon">💳</span>
+    <span class="form-head-title">Novo Cartão</span>
+    <span class="form-head-arrow">▼</span>
+  </div>
+  <div class="form-body">
+    <form id="formCartao" onsubmit="salvarCartao(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome do Cartão</label>
+          <input type="text" class="form-input" id="ctNome" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Limite</label>
+          <input type="number" class="form-input" id="ctLimite" step="0.01" min="0" required>
+        </div>
+      </div>
+      <button type="submit" class="btn" id="btnCartao">Adicionar</button>
+    </form>
+  </div>
+</div>
+
                 <div class="form-head" onclick="toggleBox('boxNovoObj')">
                   <span class="form-head-icon">🎯</span>
                   <span class="form-head-title">Novo Objetivo</span>
@@ -533,7 +582,7 @@ function toggleBox(id){
   if(b){b.classList.toggle('closed');localStorage.setItem('box_'+id,b.classList.contains('closed')?'1':'0')}
 }
 function restoreBoxes(){
-  ['boxContas','boxNovaConta','boxNovoObj'].forEach(function(id){
+ ['boxContas','boxNovaConta','boxNovoObj','boxNovoCartao'].forEach(function(id){
     var s=localStorage.getItem('box_'+id);
     var b=document.getElementById(id);
     if(b&&s==='1')b.classList.add('closed');
@@ -710,8 +759,32 @@ function atualizarObjetivos(){
   if(!objs.length){c.innerHTML='<div class="obj-card"><div class="empty"><div class="empty-icon">🎯</div><p>Sem objetivos</p></div></div>';return}
   
   var html='';
-  objs.forEach(function(o,i){html+='<div class="obj-card"><div class="obj-chart"><canvas id="objC'+i+'"></canvas><div class="obj-val" id="objV'+i+'">R$0</div></div><div class="obj-name">'+o.nome+'</div></div>'});
-  c.innerHTML=html;
+  objs.forEach(function(o,i){
+  html += ''
+   + '<div class="obj-card">'
+   +   '<button class="obj-del" title="Remover" onclick="removerObjetivo('+o.rowIndex+')">✕</button>'
+   +   '<div class="obj-chart">'
+   +     '<canvas id="objC'+i+'"></canvas>'
+   +     '<div class="obj-val" id="objV'+i+'">R$0</div>'
+   +   '</div>'
+   +   '<div class="obj-name">'+o.nome+'</div>'
+   + '</div>';
+});
+function removerObjetivo(rowIndex){
+  if(!confirm('Remover este objetivo? (Ele será arquivado)')) return;
+  google.script.run
+    .withSuccessHandler(function(r){
+      if(r && r.success){
+        toast('Objetivo removido!','ok');
+        carregarDados();
+      }else{
+        toast((r && r.message) || 'Erro','err');
+      }
+    })
+    .withFailureHandler(function(){ toast('Erro','err'); })
+    .arquivarObjetivo(rowIndex);
+}
+
   
   objs.forEach(function(o,i){
     var val=0;
@@ -1058,9 +1131,32 @@ function atualizarContasFixas(){
   var sorted=contas.slice().sort(function(a,b){return a.diaVencimento-b.diaVencimento});
   var html='';
   sorted.forEach(function(ct){
-    html+='<div class="conta-item '+(ct.pago?'pago':'')+'"><input type="checkbox" class="conta-check" '+(ct.pago?'checked':'')+' onchange="toggleConta(\''+ct.nome.replace(/'/g,"\\'")+'\',this.checked)"><div class="conta-info"><div class="conta-nome">'+ct.nome+'</div><div class="conta-detalhe">Dia '+ct.diaVencimento+'</div></div><div class="conta-valor">'+fmtMoeda(ct.valor)+'</div></div>';
-  });
+    
+   html += ''
+ + '<div class="conta-item '+(ct.pago?'pago':'')+'">'
+ +   '<input type="checkbox" class="conta-check" '+(ct.pago?'checked':'')+' onchange="toggleConta(\''+ct.nome.replace(/'/g,"\\'")+'\',this.checked)">'
+ +   '<div class="conta-info">'
+ +     '<div class="conta-nome">'+ct.nome+'</div>'
+ +     '<div class="conta-detalhe">Dia '+ct.diaVencimento+'</div>'
+ +   '</div>'
+ +   '<div class="conta-valor">'+fmtMoeda(ct.valor)+'</div>'
+ +   '<button class="conta-del" title="Remover" onclick="removerContaFixa('+ct.rowIndex+')">🗑️</button>'
+ + '</div>';
   c.innerHTML=html;
+}
+function removerContaFixa(rowIndex){
+  if(!confirm('Remover esta conta fixa? (Ela será arquivada)')) return;
+  google.script.run
+    .withSuccessHandler(function(r){
+      if(r && r.success){
+        toast('Conta removida!','ok');
+        carregarDados();
+      }else{
+        toast((r && r.message) || 'Erro','err');
+      }
+    })
+    .withFailureHandler(function(){ toast('Erro','err'); })
+    .arquivarContaFixa(rowIndex);
 }
 
 function toggleConta(nome,pago){
@@ -1135,6 +1231,33 @@ function salvarConta(e){
   var ct={nome:document.getElementById('cNome').value,valor:parseFloat(document.getElementById('cValor').value)||0,diaVencimento:parseInt(document.getElementById('cDia').value)||1};
   google.script.run.withSuccessHandler(function(r){btn.disabled=false;btn.innerHTML='Adicionar';if(r.success){toast('Adicionado!','ok');document.getElementById('formConta').reset();carregarDados()}else toast(r.message||'Erro','err')}).withFailureHandler(function(){btn.disabled=false;btn.innerHTML='Adicionar';toast('Erro','err')}).adicionarContaFixa(ct);
 }
+function salvarCartao(e){
+  e.preventDefault();
+  var btn=document.getElementById('btnCartao');
+  btn.disabled=true; btn.innerHTML='<span class="btn-spin"></span>';
+
+  var payload = {
+    nome: document.getElementById('ctNome').value,
+    limite: parseFloat(document.getElementById('ctLimite').value) || 0
+  };
+
+  google.script.run
+    .withSuccessHandler(function(r){
+      btn.disabled=false; btn.innerHTML='Adicionar';
+      if(r && r.success){
+        toast('Cartão adicionado!','ok');
+        document.getElementById('formCartao').reset();
+        carregarDados();
+      }else{
+        toast((r && r.message) || 'Erro','err');
+      }
+    })
+    .withFailureHandler(function(){
+      btn.disabled=false; btn.innerHTML='Adicionar';
+      toast('Erro','err');
+    })
+    .adicionarCartao(payload);
+}
 
 function salvarObj(e){
   e.preventDefault();
@@ -1163,4 +1286,5 @@ function toast(msg,type){
 
 </body>
 </html>
+
 
