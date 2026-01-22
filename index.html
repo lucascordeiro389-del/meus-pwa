@@ -484,6 +484,19 @@ html, body{ overflow-x: hidden; }
   </div>
 
 <script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbz-Z2vw2ciagjwx7deLfXlRgQOfc0Bwjfa0W1hsRR3UuXTb83puPsdksnelFJsh9Ohw/exec";
+  function api(action, params = {}) {
+  const url = new URL(API_URL);
+  url.searchParams.set("action", action);
+
+  Object.keys(params).forEach(k => {
+    url.searchParams.set(k, params[k]);
+  });
+
+  return fetch(url.toString(), { method: "GET" })
+    .then(r => r.json());
+}
+
 var data={historico:[],cartoes:[],categorias:[],contasFixas:[],objetivos:[],mesesDisponiveis:[]};
 var mesFiltro='atual';
 var charts={};
@@ -538,16 +551,17 @@ function switchTab(id){
 }
 
 function carregarDados(){
-  if(typeof google==='undefined'||!google.script){hideSplash();return}
-  google.script.run.withSuccessHandler(function(d){
-    if(d)data=d;
+  api("getDashboard").then(function(d){
+    if(d) data = d;
     atualizarTudo();
     hideSplash();
-  }).withFailureHandler(function(){
+  }).catch(function(err){
+    console.error(err);
     hideSplash();
-    toast('Erro ao carregar','err');
-  }).getDashboardData();
+    toast('Erro ao carregar dados', 'err');
+  });
 }
+
 
 function atualizarTudo(){
   try{atualizarFiltroMeses()}catch(e){console.error(e)}
@@ -1149,3 +1163,4 @@ function toast(msg,type){
 
 </body>
 </html>
+
