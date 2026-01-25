@@ -52,7 +52,7 @@
     .resumo-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
     .resumo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
     .card{background:var(--card-bg);border-radius:10px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-    .card-label{font-size:9px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+    .card-label{font-size:7px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
     .card-value{font-size:10px;font-weight:700}
     .card-value.green{color:var(--success)}
     .card-value.red{color:var(--danger)}
@@ -442,4 +442,5 @@ function toast(msg,type){var w=document.getElementById('toastWrap'),t=document.c
 <script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js").catch(console.error))</script>
 </body>
 </html>
+
 
