@@ -126,7 +126,7 @@
     .form-body{padding:10px}
     .form-group{margin-bottom:8px}
     .form-label{display:block;font-size:10px;font-weight:500;color:var(--text-medium);margin-bottom:3px}
-    .form-input,.form-select{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text-dark)}
+    .form-input,.form-select{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text-dark); min-width:0;}
     .form-input:focus,.form-select:focus{outline:none;border-color:var(--primary)}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .form-row-4{display:grid;grid-template-columns:1fr 1fr;gap:8px}    
@@ -442,5 +442,6 @@ function toast(msg,type){var w=document.getElementById('toastWrap'),t=document.c
 <script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js").catch(console.error))</script>
 </body>
 </html>
+
 
 
