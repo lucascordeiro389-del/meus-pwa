@@ -64,7 +64,7 @@
     .reserva-val{font-size:22px;font-weight:700;color:var(--success)}
     .reserva-sub{font-size:9px;color:var(--text-light);margin-top:2px}
     
-    /* ========== OBJETIVOS - Flex wrap com max 4 por linha ========== */
+    /* ========== OBJETIVOS ========== */
     .obj-container{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
     .obj-card{background:var(--card-bg);border-radius:10px;padding:10px 8px;box-shadow:0 1px 3px rgba(0,0,0,.05);text-align:center;position:relative;flex:1 1 calc(25% - 6px);min-width:calc(25% - 6px);max-width:100%}
     .obj-card:only-child{flex:1 1 100%;max-width:100%}
@@ -76,11 +76,14 @@
     .obj-del{position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
     .obj-card:hover .obj-del,.obj-card:active .obj-del{display:flex}
     
-    /* ========== GRÁFICOS - 2 colunas lado a lado ========== */
-    .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-    .chart-box{background:var(--card-bg);border-radius:10px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);min-width:0}
+    /* ========== GRÁFICOS ========== */
+    .chart-box{background:var(--card-bg);border-radius:10px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:10px}
     .chart-title{font-size:11px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:4px}
     .chart-wrap{height:120px;position:relative}
+    .chart-box-full{width:100%}
+    .chart-box-full .chart-wrap{height:100px}
+    .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .charts-row .chart-box{margin-bottom:0}
     
     /* ========== CARTÕES ========== */
     .cartoes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
@@ -109,8 +112,8 @@
     .tab.active{display:block}
     
     /* ========== ABA ADICIONAR ========== */
-    .add-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .add-grid-bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+    .add-full{margin-bottom:8px}
+    .add-row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     
     .form-box{background:var(--card-bg);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
     .form-head{padding:8px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;border-bottom:1px solid var(--border)}
@@ -126,6 +129,7 @@
     .form-input,.form-select{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text-dark)}
     .form-input:focus,.form-select:focus{outline:none;border-color:var(--primary)}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .form-row-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
     .btn{width:100%;padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--primary);color:#fff}
     .btn:disabled{background:var(--text-light)}
     .btn-spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px}
@@ -201,7 +205,7 @@
       <!-- ========== HOME ========== -->
       <section class="tab active" id="tab-home">
         <div class="container">
-          <!-- Linha 1: Cards resumo (metade) + Reserva (metade) -->
+          <!-- Linha 1: Cards resumo (50%) + Reserva (50%) -->
           <div class="resumo-row">
             <div class="resumo-grid">
               <div class="card"><div class="card-label">Entradas</div><div class="card-value green" id="vEntradas">R$ 0,00</div></div>
@@ -216,16 +220,22 @@
             </div>
           </div>
           
-          <!-- Linha 2: Objetivos (flex wrap, max 4 por linha) -->
+          <!-- Linha 2: Objetivos -->
           <div class="obj-container" id="objGrid"></div>
           
-          <!-- Linha 3: Gráficos lado a lado -->
+          <!-- Linha 3: Gráfico Gastos Diários (100% largura) -->
+          <div class="chart-box chart-box-full">
+            <div class="chart-title">📅 Gastos Diários</div>
+            <div class="chart-wrap"><canvas id="chartDiario"></canvas></div>
+          </div>
+          
+          <!-- Linha 4: Gráficos Categorias + Faturas (50% | 50%) -->
           <div class="charts-row">
             <div class="chart-box"><div class="chart-title">🏷️ Categorias</div><div class="chart-wrap"><canvas id="chartCat"></canvas></div></div>
             <div class="chart-box"><div class="chart-title">💳 Faturas</div><div class="chart-wrap"><canvas id="chartFat"></canvas></div></div>
           </div>
           
-          <!-- Linha 4: Cartões -->
+          <!-- Linha 5: Cartões -->
           <div class="cartoes-grid" id="cartoesGrid"></div>
         </div>
       </section>
@@ -233,8 +243,8 @@
       <!-- ========== ADICIONAR ========== -->
       <section class="tab" id="tab-add">
         <div class="container">
-          <!-- Linha principal: Lançamento (50%) + Contas do Mês (50%) -->
-          <div class="add-grid">
+          <!-- Linha 1: Formulário de Lançamento (100% largura) -->
+          <div class="add-full">
             <div class="form-box" id="boxLanc">
               <div class="form-head" onclick="toggleBox('boxLanc')">
                 <span class="form-head-icon">➕</span>
@@ -243,30 +253,31 @@
               </div>
               <div class="form-body">
                 <form id="formLanc" onsubmit="salvarLanc(event)">
-                  <div class="form-row">
+                  <div class="form-row-4">
                     <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="fData" required></div>
                     <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="fTipo"><option value="Entrada">Entrada</option><option value="Saída">Saída</option></select></div>
-                  </div>
-                  <div class="form-row">
                     <div class="form-group"><label class="form-label">Categoria</label><select class="form-select" id="fCat" onchange="onCatChange()"></select></div>
                     <div class="form-group" id="subGrp" style="display:none"><label class="form-label" id="subLabel">Destino</label><select class="form-select" id="fSub"></select></div>
                   </div>
-                  <div class="form-row">
+                  <div class="form-row-4">
                     <div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="fValor" step="0.01" min="0" required></div>
                     <div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="fDesc" placeholder="Opcional"></div>
+                    <div class="form-group"><label class="form-label">Pagamento</label><select class="form-select" id="fPag" onchange="toggleCredit()"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Débito">Débito</option><option value="Crédito">Crédito</option></select></div>
+                    <div class="form-group"><button type="submit" class="btn" id="btnLanc" style="margin-top:18px">Salvar</button></div>
                   </div>
-                  <div class="form-group"><label class="form-label">Pagamento</label><select class="form-select" id="fPag" onchange="toggleCredit()"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Débito">Débito</option><option value="Crédito">Crédito</option></select></div>
                   <div class="credit-fields" id="creditFields">
                     <div class="form-row">
                       <div class="form-group"><label class="form-label">Cartão</label><select class="form-select" id="fCartao"></select></div>
                       <div class="form-group"><label class="form-label">Parcelas</label><input type="number" class="form-input" id="fParc" value="1" min="1" max="48"></div>
                     </div>
                   </div>
-                  <button type="submit" class="btn" id="btnLanc">Salvar</button>
                 </form>
               </div>
             </div>
-            
+          </div>
+          
+          <!-- Linha 2: Contas do Mês (100% largura) -->
+          <div class="add-full">
             <div class="form-box" id="boxContas">
               <div class="form-head" onclick="toggleBox('boxContas')">
                 <span class="form-head-icon">📋</span>
@@ -278,8 +289,8 @@
             </div>
           </div>
           
-          <!-- Linha secundária: Cartão + Conta Fixa + Objetivo -->
-          <div class="add-grid-bottom">
+          <!-- Linha 3: Cartão (50%) + Conta Fixa (50%) -->
+          <div class="add-row-2" style="margin-bottom:8px">
             <div class="form-box" id="boxNovoCartao">
               <div class="form-head" onclick="toggleBox('boxNovoCartao')">
                 <span class="form-head-icon">💳</span>
@@ -313,12 +324,15 @@
                     <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cNome" required></div>
                     <div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="cValor" step="0.01" required></div>
                   </div>
-                  <div class="form-group"><label class="form-label">Dia</label><input type="number" class="form-input" id="cDia" min="1" max="31" required></div>
+                  <div class="form-group"><label class="form-label">Dia Vencimento</label><input type="number" class="form-input" id="cDia" min="1" max="31" required></div>
                   <button type="submit" class="btn" id="btnConta">Adicionar</button>
                 </form>
               </div>
             </div>
-            
+          </div>
+          
+          <!-- Linha 4: Objetivo (50%) + vazio (50%) -->
+          <div class="add-row-2">
             <div class="form-box" id="boxNovoObj">
               <div class="form-head" onclick="toggleBox('boxNovoObj')">
                 <span class="form-head-icon">🎯</span>
@@ -335,6 +349,7 @@
                 </form>
               </div>
             </div>
+            <div></div>
           </div>
         </div>
       </section>
@@ -395,7 +410,10 @@ function atualizarResumo(){var mes=getMesFiltrado(),hist=data.historico||[],patr
 
 function atualizarObjetivos(){var c=document.getElementById('objGrid'),objs=data.objetivos||[],hist=data.historico||[],mes=getMesFiltrado();Object.keys(objCharts).forEach(k=>{if(objCharts[k])objCharts[k].destroy()});objCharts={};if(!objs.length){c.innerHTML='<div class="obj-card" style="flex:1 1 100%"><div class="empty"><div class="empty-icon">🎯</div><p>Sem objetivos</p></div></div>';return}var html='';objs.forEach((o,i)=>{html+='<div class="obj-card"><button class="obj-del" onclick="excluirObj(\''+o.nome.replace(/'/g,"\\'")+'\')">×</button><div class="obj-chart"><canvas id="objC'+i+'"></canvas><div class="obj-val" id="objV'+i+'">R$0</div></div><div class="obj-name">'+o.nome+'</div></div>'});c.innerHTML=html;objs.forEach((o,i)=>{var val=0,nN=norm(o.nome),p1='objetivo: '+nN,p2='objetivo:'+nN;hist.forEach(h=>{var mIt=getMesAno(h.data);if(!mIt||mIt>mes)return;var cN=norm(h.categoria),tN=norm(h.tipo);if(cN===p1||cN===p2){if(tN==='entrada')val+=h.valor;else if(tN==='saida')val-=h.valor}});val=Math.max(0,val);var pct=o.meta>0?Math.min(val/o.meta*100,100):0;document.getElementById('objV'+i).textContent=fmtCurto(val);var ctx=document.getElementById('objC'+i).getContext('2d'),dk=document.documentElement.getAttribute('data-theme')==='dark';objCharts['o'+i]=new Chart(ctx,{type:'doughnut',data:{datasets:[{data:[pct,100-pct],backgroundColor:['rgba(74,155,110,.9)',dk?'rgba(64,64,64,.5)':'rgba(240,238,235,.8)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,cutout:'70%',plugins:{legend:{display:false},tooltip:{enabled:false}}}})})}
 
-function atualizarGraficos(){graficosCategorias();graficosFaturas();atualizarCartoesGrid()}
+function atualizarGraficos(){graficosDiarios();graficosCategorias();graficosFaturas();atualizarCartoesGrid()}
+
+function graficosDiarios(){var ctx=document.getElementById('chartDiario').getContext('2d'),mes=getMesFiltrado(),hist=data.historico||[],p=mes.split('-'),ano=+p[0],m=+p[1],dias=new Date(ano,m,0).getDate(),gastos=[];for(var i=0;i<dias;i++)gastos.push(0);hist.forEach(it=>{if(norm(it.tipo)!=='saida')return;var fp=norm(it.formaPagamento),dt=parseData(it.data);if(!dt)return;if(fp==='credito'){if(it.parcelas>1){calcParcelas(it).forEach(pc=>{if(pc.mes===mes)gastos[dt.getDate()-1]+=pc.valor})}else{var mf=calcMesFatura(it.data,it.cartao);if(mf===mes)gastos[dt.getDate()-1]+=it.valor}}else{if(getMesAno(it.data)===mes)gastos[dt.getDate()-1]+=it.valor}});var labels=[];for(var i=1;i<=dias;i++)labels.push(i);if(charts.diario)charts.diario.destroy();charts.diario=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{data:gastos,borderColor:'#C45C4D',backgroundColor:'rgba(196,92,77,.1)',fill:true,tension:.3,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:8},callback:v=>fmtCurto(v)},beginAtZero:true}}}})}
+
 function graficosCategorias(){var ctx=document.getElementById('chartCat').getContext('2d'),mes=getMesFiltrado(),hist=data.historico||[],gastos={};hist.forEach(it=>{if(norm(it.tipo)!=='saida')return;var cat=it.categoria||'Outros',fp=norm(it.formaPagamento);if(fp==='credito'){if(it.parcelas>1){calcParcelas(it).forEach(pc=>{if(pc.mes===mes)gastos[cat]=(gastos[cat]||0)+pc.valor})}else{var mf=calcMesFatura(it.data,it.cartao);if(mf===mes)gastos[cat]=(gastos[cat]||0)+it.valor}}else{if(getMesAno(it.data)===mes)gastos[cat]=(gastos[cat]||0)+it.valor}});var ent=Object.entries(gastos).sort((a,b)=>b[1]-a[1]).slice(0,5),labels=ent.map(e=>e[0].substring(0,8)),vals=ent.map(e=>e[1]);if(charts.cat)charts.cat.destroy();charts.cat=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{data:vals,backgroundColor:'#593825',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:45,minRotation:45}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:8},callback:v=>fmtCurto(v)},beginAtZero:true}}}})}
 function graficosFaturas(){var ctx=document.getElementById('chartFat').getContext('2d'),hist=data.historico||[],mes=getMesFiltrado(),p=mes.split('-'),anoB=+p[0],mesB=+p[1]-1,meses=[];for(var i=0;i<6;i++){var d=new Date(anoB,mesB+i,1);meses.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))}var carts={};(data.cartoes||[]).forEach(c=>{carts[c.nome]={};meses.forEach(m=>{carts[c.nome][m]=0})});hist.forEach(it=>{if(norm(it.tipo)!=='saida'||norm(it.formaPagamento)!=='credito'||!it.cartao)return;if(it.parcelas>1){calcParcelas(it).forEach(pc=>{if(carts[it.cartao]&&carts[it.cartao].hasOwnProperty(pc.mes))carts[it.cartao][pc.mes]+=pc.valor})}else{var mf=calcMesFatura(it.data,it.cartao);if(carts[it.cartao]&&carts[it.cartao].hasOwnProperty(mf))carts[it.cartao][mf]+=it.valor}});var labels=meses.map(m=>getMesCurto(+m.split('-')[1])),datasets=[],cores=['#593825','#7A4E3A','#8B6347','#A07855'],idx=0;for(var c in carts){datasets.push({label:c,data:meses.map(m=>carts[c][m]||0),backgroundColor:cores[idx%4],borderRadius:3});idx++}if(!datasets.length)datasets.push({label:'Sem dados',data:[0,0,0,0,0,0],backgroundColor:'rgba(89,56,37,.3)'});if(charts.fat)charts.fat.destroy();charts.fat=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:8}},stacked:true},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:8},callback:v=>fmtCurto(v)},stacked:true,beginAtZero:true}}}})}
 function atualizarCartoesGrid(){var c=document.getElementById('cartoesGrid'),carts=data.cartoes||[],hist=data.historico||[],mes=getMesFiltrado();if(!carts.length){c.innerHTML='<div class="cartao-box"><div class="empty"><div class="empty-icon">💳</div><p>Sem cartões</p></div></div>';return}var info={};carts.forEach(ct=>{info[ct.nome]={limite:ct.limite,atual:0}});hist.forEach(it=>{if(norm(it.tipo)!=='saida'||norm(it.formaPagamento)!=='credito'||!it.cartao||!info[it.cartao])return;if(it.parcelas>1){calcParcelas(it).forEach(pc=>{if(pc.mes===mes)info[it.cartao].atual+=pc.valor})}else{var mf=calcMesFatura(it.data,it.cartao);if(mf===mes)info[it.cartao].atual+=it.valor}});function getIcon(n){var l=n.toLowerCase();if(l.includes('nubank'))return'nubank';if(l.includes('inter'))return'inter';if(l.includes('itau'))return'itau';if(l.includes('bradesco'))return'bradesco';if(l.includes('santander'))return'santander';if(l.includes('c6'))return'c6';return'default'}var html='';carts.forEach(ct=>{var x=info[ct.nome],disp=Math.max(0,x.limite-x.atual);html+='<div class="cartao-box"><button class="cartao-del" onclick="excluirCartao(\''+ct.nome.replace(/'/g,"\\'")+'\')">×</button><div class="cartao-icon '+getIcon(ct.nome)+'">💳</div><div class="cartao-nome">'+ct.nome+'</div><div class="cartao-fat">'+fmtMoeda(x.atual)+'</div><div class="cartao-disp">Disp: '+fmtCurto(disp)+'</div></div>'});c.innerHTML=html}
@@ -415,7 +433,7 @@ async function excluirObj(nome){if(!confirm('Excluir objetivo?'))return;var r=aw
 async function excluirCartao(nome){if(!confirm('Excluir cartão?'))return;var r=await apiPost('removerCartao',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message||'Erro','err')}
 async function excluirContaFixa(nome){if(!confirm('Excluir conta?'))return;var r=await apiPost('removerContaFixa',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message||'Erro','err')}
 
-async function salvarLanc(e){e.preventDefault();var btn=document.getElementById('btnLanc');btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Salvando...';var fp=document.getElementById('fPag').value,isCred=fp==='Crédito',cat=document.getElementById('fCat').value,cn=norm(cat),desc=document.getElementById('fDesc').value;if(cn==='investimentos'||cn==='conta fixa'){var sub=document.getElementById('fSub');if(sub&&sub.value){cat=sub.value;if(!desc)desc=sub.options[sub.selectedIndex].textContent.split(' - ')[0].replace(/^[🛡️🎯]\s*/,'')}}var lanc={data:document.getElementById('fData').value,tipo:document.getElementById('fTipo').value,categoria:cat,valor:parseFloat(document.getElementById('fValor').value)||0,descricao:desc||cat,formaPagamento:fp,cartao:isCred?document.getElementById('fCartao').value:'',parcelas:isCred?parseInt(document.getElementById('fParc').value)||1:1,parcelaAtual:1};var r=await apiPost('adicionarLancamento',lanc);btn.disabled=false;btn.innerHTML='Salvar';if(r.success){toast('Salvo!','ok');document.getElementById('formLanc').reset();document.getElementById('fData').value=new Date().toISOString().split('T')[0];toggleCredit();onCatChange();carregarDados()}else toast(r.message||'Erro','err')}
+async function salvarLanc(e){e.preventDefault();var btn=document.getElementById('btnLanc');btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';var fp=document.getElementById('fPag').value,isCred=fp==='Crédito',cat=document.getElementById('fCat').value,cn=norm(cat),desc=document.getElementById('fDesc').value;if(cn==='investimentos'||cn==='conta fixa'){var sub=document.getElementById('fSub');if(sub&&sub.value){cat=sub.value;if(!desc)desc=sub.options[sub.selectedIndex].textContent.split(' - ')[0].replace(/^[🛡️🎯]\s*/,'')}}var lanc={data:document.getElementById('fData').value,tipo:document.getElementById('fTipo').value,categoria:cat,valor:parseFloat(document.getElementById('fValor').value)||0,descricao:desc||cat,formaPagamento:fp,cartao:isCred?document.getElementById('fCartao').value:'',parcelas:isCred?parseInt(document.getElementById('fParc').value)||1:1,parcelaAtual:1};var r=await apiPost('adicionarLancamento',lanc);btn.disabled=false;btn.innerHTML='Salvar';if(r.success){toast('Salvo!','ok');document.getElementById('formLanc').reset();document.getElementById('fData').value=new Date().toISOString().split('T')[0];toggleCredit();onCatChange();carregarDados()}else toast(r.message||'Erro','err')}
 async function salvarConta(e){e.preventDefault();var btn=document.getElementById('btnConta');btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';var ct={nome:document.getElementById('cNome').value,valor:parseFloat(document.getElementById('cValor').value)||0,diaVencimento:parseInt(document.getElementById('cDia').value)||1};var r=await apiPost('adicionarContaFixa',ct);btn.disabled=false;btn.innerHTML='Adicionar';if(r.success){toast('Adicionado!','ok');document.getElementById('formConta').reset();carregarDados()}else toast(r.message||'Erro','err')}
 async function salvarObj(e){e.preventDefault();var btn=document.getElementById('btnObj');btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';var obj={nome:document.getElementById('oNome').value,meta:parseFloat(document.getElementById('oMeta').value)||0};var r=await apiPost('adicionarObjetivo',obj);btn.disabled=false;btn.innerHTML='Adicionar';if(r.success){toast('Adicionado!','ok');document.getElementById('formObj').reset();carregarDados()}else toast(r.message||'Erro','err')}
 async function salvarCartao(e){e.preventDefault();var btn=document.getElementById('btnCartao');btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';var cart={nome:document.getElementById('cartNome').value,limite:parseFloat(document.getElementById('cartLimite').value)||0,diaFechamento:parseInt(document.getElementById('cartFechamento').value)||1,diaVencimento:parseInt(document.getElementById('cartVencimento').value)||10};var r=await apiPost('adicionarCartao',cart);btn.disabled=false;btn.innerHTML='Adicionar';if(r.success){toast('Adicionado!','ok');document.getElementById('formCartao').reset();carregarDados()}else toast(r.message||'Erro','err')}
