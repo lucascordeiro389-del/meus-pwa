@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=1024, initial-scale=0.4, maximum-scale=2.0, user-scalable=yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Meu$">
@@ -17,73 +17,73 @@
     :root{--primary:#593825;--primary-dark:#3D2518;--secondary:#9D9167;--background:#FAF9F7;--card-bg:#FFFFFF;--success:#4A9B6E;--success-light:#E8F5ED;--danger:#C45C4D;--danger-light:#FDEAE8;--warning:#E8A940;--text-dark:#1A1A1A;--text-medium:#666;--text-light:#999;--border:#F0EEEB;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
     [data-theme="dark"]{--primary:#6B4332;--primary-dark:#4A2E22;--secondary:#B8A87A;--background:#1A1A1A;--card-bg:#2D2D2D;--success:#5AB87A;--success-light:#1E3A2A;--danger:#E07060;--danger-light:#3A1E1E;--warning:#F0B850;--text-dark:#F0F0F0;--text-medium:#B0B0B0;--text-light:#808080;--border:#404040}
     html{height:100%}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--background);color:var(--text-dark);font-size:14px;min-height:100%;display:flex;flex-direction:column}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--background);color:var(--text-dark);font-size:14px;min-height:100%;display:flex;flex-direction:column;min-width:1024px}
     
     .splash{position:fixed;inset:0;background:linear-gradient(145deg,#593825,#3D2518);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:10000;opacity:1;transition:opacity .3s}
     .splash.hide{opacity:0;pointer-events:none}
-    .splash-logo{font-size:60px;margin-bottom:12px}
-    .splash-title{color:#fff;font-size:22px;font-weight:700}
-    .splash-sub{color:rgba(255,255,255,.6);font-size:12px;margin-top:4px}
-    .splash-spin{width:32px;height:32px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-top:24px}
+    .splash-logo{font-size:80px;margin-bottom:16px}
+    .splash-title{color:#fff;font-size:32px;font-weight:700}
+    .splash-sub{color:rgba(255,255,255,.6);font-size:16px;margin-top:6px}
+    .splash-spin{width:40px;height:40px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-top:30px}
     @keyframes spin{to{transform:rotate(360deg)}}
     
     .app{display:flex;flex-direction:column;min-height:100vh;padding-top:var(--safe-top)}
-    .header{background:var(--primary);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:sticky;top:0;z-index:100}
+    .header{background:var(--primary);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:sticky;top:0;z-index:100}
     [data-theme="dark"] .header{background:var(--card-bg);border-bottom:1px solid var(--border)}
-    .logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:18px;font-weight:700}
+    .logo{display:flex;align-items:center;gap:12px;color:#fff;font-size:24px;font-weight:700}
     [data-theme="dark"] .logo{color:var(--text-dark)}
-    .header-right{display:flex;align-items:center;gap:10px}
-    .month-sel{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;font-weight:500}
+    .header-right{display:flex;align-items:center;gap:14px}
+    .month-sel{background:rgba(255,255,255,.15);border:none;border-radius:10px;padding:12px 18px;color:#fff;font-size:16px;font-weight:500}
     .month-sel option{background:var(--card-bg);color:var(--text-dark)}
     [data-theme="dark"] .month-sel{background:var(--border);color:var(--text-dark)}
-    .theme-btn{background:rgba(255,255,255,.15);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer}
+    .theme-btn{background:rgba(255,255,255,.15);border:none;border-radius:50%;width:48px;height:48px;font-size:24px;cursor:pointer}
     [data-theme="dark"] .theme-btn{background:var(--border)}
     
-    .main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:70px}
-    .container{padding:12px;max-width:800px;margin:0 auto}
+    .main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+    .container{padding:16px 24px;max-width:1200px;margin:0 auto}
     
-    .alert{background:var(--danger-light);border-left:3px solid var(--danger);padding:10px 12px;margin:0 12px 10px;border-radius:0 8px 8px 0;display:none;align-items:center;gap:8px}
+    .alert{background:var(--danger-light);border-left:4px solid var(--danger);padding:14px 18px;margin:0 24px 14px;border-radius:0 10px 10px 0;display:none;align-items:center;gap:12px}
     .alert.show{display:flex}
     .alert-text{flex:1}
-    .alert-title{font-size:12px;font-weight:600;color:var(--danger)}
-    .alert-detail{font-size:10px;color:var(--danger);opacity:.8}
+    .alert-title{font-size:15px;font-weight:600;color:var(--danger)}
+    .alert-detail{font-size:13px;color:var(--danger);opacity:.8}
     
-    /* RESUMO - Layout fixo */
-    .resumo-section{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-bottom:12px;align-items:stretch}
-    .resumo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-    .card{background:var(--card-bg);border-radius:12px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-    .card-label{font-size:8px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
-    .card-value{font-size:14px;font-weight:700}
+    /* RESUMO */
+    .resumo-section{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:16px;align-items:stretch}
+    .resumo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .card{background:var(--card-bg);border-radius:14px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+    .card-label{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+    .card-value{font-size:20px;font-weight:700}
     .card-value.green{color:var(--success)}
     .card-value.red{color:var(--danger)}
-    .reserva-box{background:var(--card-bg);border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid var(--success);display:flex;flex-direction:column;justify-content:center}
-    .reserva-head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-    .reserva-icon{font-size:16px}
-    .reserva-title{font-size:9px;font-weight:600;color:var(--success);text-transform:uppercase}
-    .reserva-val{font-size:20px;font-weight:700;color:var(--success)}
-    .reserva-sub{font-size:8px;color:var(--text-light);margin-top:2px}
+    .reserva-box{background:var(--card-bg);border-radius:14px;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.06);border-left:5px solid var(--success);display:flex;flex-direction:column;justify-content:center}
+    .reserva-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .reserva-icon{font-size:22px}
+    .reserva-title{font-size:12px;font-weight:600;color:var(--success);text-transform:uppercase}
+    .reserva-val{font-size:28px;font-weight:700;color:var(--success)}
+    .reserva-sub{font-size:11px;color:var(--text-light);margin-top:3px}
     
-    /* OBJETIVOS - SEMPRE 4 colunas */
-    .obj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
-    .obj-card{background:var(--card-bg);border-radius:10px;padding:8px 4px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center;position:relative;min-height:80px}
-    .obj-chart{position:relative;width:44px;height:44px;margin:0 auto 4px}
-    .obj-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:8px;font-weight:700;color:var(--success)}
-    .obj-name{font-size:8px;font-weight:600;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
-    .obj-del{position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+    /* OBJETIVOS - 4 colunas */
+    .obj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+    .obj-card{background:var(--card-bg);border-radius:12px;padding:12px 8px;box-shadow:0 2px 6px rgba(0,0,0,.06);text-align:center;position:relative;min-height:100px}
+    .obj-chart{position:relative;width:56px;height:56px;margin:0 auto 6px}
+    .obj-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--success)}
+    .obj-name{font-size:11px;font-weight:600;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+    .obj-del{position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:14px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
     .obj-card:hover .obj-del,.obj-card:active .obj-del{display:flex}
     
-    /* GRÁFICOS - SEMPRE 2 colunas lado a lado */
-    .chart-box{background:var(--card-bg);border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px}
-    .chart-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-    .chart-wrap{height:150px;position:relative}
-    .charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    /* GRÁFICOS - 2 colunas */
+    .chart-box{background:var(--card-bg);border-radius:14px;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:14px}
+    .chart-title{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .chart-wrap{height:180px;position:relative}
+    .charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
     .charts-2col .chart-box{margin-bottom:0}
-    .charts-2col .chart-wrap{height:130px}
+    .charts-2col .chart-wrap{height:160px}
     
-    /* CARTÕES - SEMPRE 4 colunas */
-    .cartoes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
-    .cartao-box{background:var(--card-bg);border-radius:10px;padding:8px 4px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center;position:relative;min-height:90px}
-    .cartao-icon{width:26px;height:26px;border-radius:6px;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:12px}
+    /* CARTÕES - 4 colunas */
+    .cartoes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+    .cartao-box{background:var(--card-bg);border-radius:12px;padding:12px 8px;box-shadow:0 2px 6px rgba(0,0,0,.06);text-align:center;position:relative;min-height:110px}
+    .cartao-icon{width:36px;height:36px;border-radius:8px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:16px}
     .cartao-icon.nubank{background:linear-gradient(145deg,#8A05BE,#6B04A0)}
     .cartao-icon.inter{background:linear-gradient(145deg,#FF7A00,#E06800)}
     .cartao-icon.itau{background:linear-gradient(145deg,#003399,#002277)}
@@ -91,78 +91,79 @@
     .cartao-icon.santander{background:linear-gradient(145deg,#EC0000,#CC0000)}
     .cartao-icon.c6{background:linear-gradient(145deg,#1A1A1A,#000)}
     .cartao-icon.default{background:linear-gradient(145deg,var(--primary),var(--primary-dark))}
-    .cartao-nome{font-size:9px;font-weight:600;margin-bottom:2px}
-    .cartao-fat{font-size:10px;color:var(--danger);font-weight:700}
-    .cartao-disp{font-size:8px;color:var(--success);margin-top:3px;padding-top:3px;border-top:1px solid var(--border)}
-    .cartao-del{position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+    .cartao-nome{font-size:12px;font-weight:600;margin-bottom:3px}
+    .cartao-fat{font-size:14px;color:var(--danger);font-weight:700}
+    .cartao-disp{font-size:11px;color:var(--success);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)}
+    .cartao-del{position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:14px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
     .cartao-box:hover .cartao-del,.cartao-box:active .cartao-del{display:flex}
     
-    /* NAV - Fixo no fundo */
-    .nav{background:var(--card-bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0;position:fixed;bottom:0;left:0;right:0;z-index:1000;padding-bottom:calc(8px + var(--safe-bottom))}
-    .nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;color:var(--text-light);font-size:9px;font-weight:500;padding:6px 16px;cursor:pointer}
+    /* NAV */
+    .nav{background:var(--card-bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:12px 0;position:fixed;bottom:0;left:0;right:0;z-index:1000;padding-bottom:calc(12px + var(--safe-bottom))}
+    .nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;border:none;background:none;color:var(--text-light);font-size:13px;font-weight:500;padding:10px 24px;cursor:pointer}
     .nav-btn.active{color:var(--primary)}
-    .nav-btn .ico{font-size:20px}
+    .nav-btn .ico{font-size:28px}
     
     .tab{display:none}
     .tab.active{display:block}
     
-    /* FORMULÁRIOS - SEMPRE 2 colunas */
-    .add-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .form-box{background:var(--card-bg);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;overflow:hidden}
-    .form-head{padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--border)}
-    .form-head-icon{font-size:16px}
-    .form-head-title{flex:1;font-size:13px;font-weight:600}
-    .form-head-badge{font-size:10px;color:var(--text-light);background:var(--background);padding:3px 8px;border-radius:10px}
-    .form-head-arrow{font-size:10px;color:var(--text-light);transition:transform .2s}
+    /* FORMULÁRIOS - 4 colunas */
+    .add-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .add-col{display:contents}
+    .form-box{background:var(--card-bg);border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:0;overflow:hidden}
+    .form-head{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--border)}
+    .form-head-icon{font-size:20px}
+    .form-head-title{flex:1;font-size:15px;font-weight:600}
+    .form-head-badge{font-size:12px;color:var(--text-light);background:var(--background);padding:4px 10px;border-radius:12px}
+    .form-head-arrow{font-size:12px;color:var(--text-light);transition:transform .2s}
     .form-box.closed .form-head-arrow{transform:rotate(-90deg)}
     .form-box.closed .form-body{display:none}
-    .form-body{padding:14px}
-    .form-group{margin-bottom:12px}
-    .form-label{display:block;font-size:11px;font-weight:500;color:var(--text-medium);margin-bottom:5px}
-    .form-input,.form-select{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--card-bg);color:var(--text-dark)}
+    .form-body{padding:16px}
+    .form-group{margin-bottom:14px}
+    .form-label{display:block;font-size:13px;font-weight:500;color:var(--text-medium);margin-bottom:6px}
+    .form-input,.form-select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--card-bg);color:var(--text-dark)}
     .form-input:focus,.form-select:focus{outline:none;border-color:var(--primary)}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:var(--primary);color:#fff}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;background:var(--primary);color:#fff}
     .btn:disabled{background:var(--text-light)}
-    .btn-spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px}
-    .credit-fields{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
+    .btn-spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px}
+    .credit-fields{display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
     .credit-fields.show{display:block}
     
-    .conta-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--background);border-radius:8px;margin-bottom:6px}
+    .conta-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--background);border-radius:10px;margin-bottom:8px}
     .conta-item.pago{opacity:.5}
-    .conta-check{width:18px;height:18px;accent-color:var(--success)}
+    .conta-check{width:22px;height:22px;accent-color:var(--success)}
     .conta-info{flex:1}
-    .conta-nome{font-size:12px;font-weight:500}
+    .conta-nome{font-size:14px;font-weight:500}
     .conta-item.pago .conta-nome{text-decoration:line-through}
-    .conta-detalhe{font-size:10px;color:var(--text-light)}
-    .conta-valor{font-size:13px;font-weight:600;color:var(--danger)}
-    .conta-del{background:none;border:none;font-size:14px;opacity:.4;cursor:pointer;padding:4px}
+    .conta-detalhe{font-size:12px;color:var(--text-light)}
+    .conta-valor{font-size:16px;font-weight:600;color:var(--danger)}
+    .conta-del{background:none;border:none;font-size:18px;opacity:.4;cursor:pointer;padding:6px}
     
-    .hist-list{display:flex;flex-direction:column;gap:8px}
-    .hist-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card-bg);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-    .hist-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .hist-list{display:flex;flex-direction:column;gap:10px}
+    .hist-item{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card-bg);border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+    .hist-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
     .hist-icon.in{background:var(--success-light)}
     .hist-icon.out{background:var(--danger-light)}
     .hist-info{flex:1;min-width:0}
-    .hist-desc{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .hist-meta{font-size:10px;color:var(--text-light);margin-top:2px}
+    .hist-desc{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hist-meta{font-size:13px;color:var(--text-light);margin-top:3px}
     .hist-right{text-align:right}
-    .hist-val{font-size:14px;font-weight:600}
+    .hist-val{font-size:18px;font-weight:600}
     .hist-val.in{color:var(--success)}
     .hist-val.out{color:var(--danger)}
-    .hist-del{background:none;border:none;font-size:14px;opacity:.4;cursor:pointer;padding:4px;margin-top:4px}
-    .parc-badge{display:inline-block;background:var(--secondary);color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;margin-left:4px}
+    .hist-del{background:none;border:none;font-size:18px;opacity:.4;cursor:pointer;padding:6px;margin-top:6px}
+    .parc-badge{display:inline-block;background:var(--secondary);color:#fff;padding:3px 7px;border-radius:5px;font-size:11px;margin-left:6px}
     
-    .toast-wrap{position:fixed;top:calc(56px + var(--safe-top));left:12px;right:12px;z-index:9000;pointer-events:none}
-    .toast{background:var(--text-dark);color:#fff;padding:10px 14px;border-radius:8px;margin-bottom:6px;font-size:12px;font-weight:500;animation:fadeIn .3s}
+    .toast-wrap{position:fixed;top:calc(70px + var(--safe-top));left:24px;right:24px;z-index:9000;pointer-events:none}
+    .toast{background:var(--text-dark);color:#fff;padding:14px 18px;border-radius:10px;margin-bottom:8px;font-size:15px;font-weight:500;animation:fadeIn .3s}
     .toast.ok{background:var(--success)}
     .toast.err{background:var(--danger)}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
     
-    .empty{text-align:center;padding:20px;color:var(--text-light)}
-    .empty-icon{font-size:28px;margin-bottom:6px;opacity:.5}
-    .empty p{font-size:12px}
-    .section-title{font-size:12px;font-weight:600;color:var(--text-medium);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+    .empty{text-align:center;padding:24px;color:var(--text-light)}
+    .empty-icon{font-size:36px;margin-bottom:8px;opacity:.5}
+    .empty p{font-size:14px}
+    .section-title{font-size:16px;font-weight:600;color:var(--text-medium);margin-bottom:14px;display:flex;align-items:center;gap:8px}
   </style>
 </head>
 <body>
@@ -221,102 +222,101 @@
       <section class="tab" id="tab-add">
         <div class="container">
           <div class="add-wrap">
-            <div class="add-col">
-              <div class="form-box" id="boxLanc">
-                <div class="form-head" onclick="toggleBox('boxLanc')">
-                  <span class="form-head-icon">➕</span>
-                  <span class="form-head-title">Novo Lançamento</span>
-                  <span class="form-head-arrow">▼</span>
-                </div>
-                <div class="form-body">
-                  <form id="formLanc" onsubmit="salvarLanc(event)">
-                    <div class="form-row">
-                      <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="fData" required></div>
-                      <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="fTipo"><option value="Entrada">Entrada</option><option value="Saída">Saída</option></select></div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group"><label class="form-label">Categoria</label><select class="form-select" id="fCat" onchange="onCatChange()"></select></div>
-                      <div class="form-group" id="subGrp" style="display:none"><label class="form-label" id="subLabel">Destino</label><select class="form-select" id="fSub"></select></div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="fValor" step="0.01" min="0" required></div>
-                      <div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="fDesc" placeholder="Opcional"></div>
-                    </div>
-                    <div class="form-group"><label class="form-label">Pagamento</label><select class="form-select" id="fPag" onchange="toggleCredit()"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Débito">Débito</option><option value="Crédito">Crédito</option></select></div>
-                    <div class="credit-fields" id="creditFields">
-                      <div class="form-row">
-                        <div class="form-group"><label class="form-label">Cartão</label><select class="form-select" id="fCartao"></select></div>
-                        <div class="form-group"><label class="form-label">Parcelas</label><input type="number" class="form-input" id="fParc" value="1" min="1" max="48"></div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn" id="btnLanc">Salvar</button>
-                  </form>
-                </div>
+            <div class="form-box" id="boxLanc">
+              <div class="form-head" onclick="toggleBox('boxLanc')">
+                <span class="form-head-icon">➕</span>
+                <span class="form-head-title">Novo Lançamento</span>
+                <span class="form-head-arrow">▼</span>
               </div>
-              
-              <div class="form-box closed" id="boxNovoCartao">
-                <div class="form-head" onclick="toggleBox('boxNovoCartao')">
-                  <span class="form-head-icon">💳</span>
-                  <span class="form-head-title">Novo Cartão</span>
-                  <span class="form-head-arrow">▼</span>
-                </div>
-                <div class="form-body">
-                  <form id="formCartao" onsubmit="salvarCartao(event)">
+              <div class="form-body">
+                <form id="formLanc" onsubmit="salvarLanc(event)">
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="fData" required></div>
+                    <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="fTipo"><option value="Entrada">Entrada</option><option value="Saída">Saída</option></select></div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Categoria</label><select class="form-select" id="fCat" onchange="onCatChange()"></select></div>
+                    <div class="form-group" id="subGrp" style="display:none"><label class="form-label" id="subLabel">Destino</label><select class="form-select" id="fSub"></select></div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="fValor" step="0.01" min="0" required></div>
+                    <div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="fDesc" placeholder="Opcional"></div>
+                  </div>
+                  <div class="form-group"><label class="form-label">Pagamento</label><select class="form-select" id="fPag" onchange="toggleCredit()"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Débito">Débito</option><option value="Crédito">Crédito</option></select></div>
+                  <div class="credit-fields" id="creditFields">
                     <div class="form-row">
-                      <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cartNome" placeholder="Ex: Nubank" required></div>
-                      <div class="form-group"><label class="form-label">Limite</label><input type="number" class="form-input" id="cartLimite" step="0.01" required></div>
+                      <div class="form-group"><label class="form-label">Cartão</label><select class="form-select" id="fCartao"></select></div>
+                      <div class="form-group"><label class="form-label">Parcelas</label><input type="number" class="form-input" id="fParc" value="1" min="1" max="48"></div>
                     </div>
-                    <div class="form-row">
-                      <div class="form-group"><label class="form-label">Dia Fechamento</label><input type="number" class="form-input" id="cartFechamento" min="1" max="31" value="1" required></div>
-                      <div class="form-group"><label class="form-label">Dia Vencimento</label><input type="number" class="form-input" id="cartVencimento" min="1" max="31" value="10" required></div>
-                    </div>
-                    <button type="submit" class="btn" id="btnCartao">Adicionar</button>
-                  </form>
-                </div>
+                  </div>
+                  <button type="submit" class="btn" id="btnLanc">Salvar</button>
+                </form>
               </div>
             </div>
-            <div class="add-col">
-              <div class="form-box" id="boxContas">
-                <div class="form-head" onclick="toggleBox('boxContas')">
-                  <span class="form-head-icon">📋</span>
-                  <span class="form-head-title">Contas do Mês</span>
-                  <span class="form-head-badge" id="contasBadge">0</span>
-                  <span class="form-head-arrow">▼</span>
-                </div>
-                <div class="form-body" id="contasList"></div>
+            
+            <div class="form-box" id="boxContas">
+              <div class="form-head" onclick="toggleBox('boxContas')">
+                <span class="form-head-icon">📋</span>
+                <span class="form-head-title">Contas do Mês</span>
+                <span class="form-head-badge" id="contasBadge">0</span>
+                <span class="form-head-arrow">▼</span>
               </div>
-              <div class="form-box closed" id="boxNovaConta">
-                <div class="form-head" onclick="toggleBox('boxNovaConta')">
-                  <span class="form-head-icon">📅</span>
-                  <span class="form-head-title">Nova Conta Fixa</span>
-                  <span class="form-head-arrow">▼</span>
-                </div>
-                <div class="form-body">
-                  <form id="formConta" onsubmit="salvarConta(event)">
-                    <div class="form-row">
-                      <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cNome" required></div>
-                      <div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="cValor" step="0.01" required></div>
-                    </div>
-                    <div class="form-group"><label class="form-label">Dia Vencimento</label><input type="number" class="form-input" id="cDia" min="1" max="31" required></div>
-                    <button type="submit" class="btn" id="btnConta">Adicionar</button>
-                  </form>
-                </div>
+              <div class="form-body" id="contasList"></div>
+            </div>
+            
+            <div class="form-box" id="boxNovoCartao">
+              <div class="form-head" onclick="toggleBox('boxNovoCartao')">
+                <span class="form-head-icon">💳</span>
+                <span class="form-head-title">Novo Cartão</span>
+                <span class="form-head-arrow">▼</span>
               </div>
-              <div class="form-box closed" id="boxNovoObj">
-                <div class="form-head" onclick="toggleBox('boxNovoObj')">
-                  <span class="form-head-icon">🎯</span>
-                  <span class="form-head-title">Novo Objetivo</span>
-                  <span class="form-head-arrow">▼</span>
-                </div>
-                <div class="form-body">
-                  <form id="formObj" onsubmit="salvarObj(event)">
-                    <div class="form-row">
-                      <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="oNome" required></div>
-                      <div class="form-group"><label class="form-label">Meta</label><input type="number" class="form-input" id="oMeta" step="0.01" required></div>
-                    </div>
-                    <button type="submit" class="btn" id="btnObj">Adicionar</button>
-                  </form>
-                </div>
+              <div class="form-body">
+                <form id="formCartao" onsubmit="salvarCartao(event)">
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cartNome" placeholder="Ex: Nubank" required></div>
+                    <div class="form-group"><label class="form-label">Limite</label><input type="number" class="form-input" id="cartLimite" step="0.01" required></div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Dia Fechamento</label><input type="number" class="form-input" id="cartFechamento" min="1" max="31" value="1" required></div>
+                    <div class="form-group"><label class="form-label">Dia Vencimento</label><input type="number" class="form-input" id="cartVencimento" min="1" max="31" value="10" required></div>
+                  </div>
+                  <button type="submit" class="btn" id="btnCartao">Adicionar</button>
+                </form>
+              </div>
+            </div>
+            
+            <div class="form-box" id="boxNovaConta">
+              <div class="form-head" onclick="toggleBox('boxNovaConta')">
+                <span class="form-head-icon">📅</span>
+                <span class="form-head-title">Nova Conta Fixa</span>
+                <span class="form-head-arrow">▼</span>
+              </div>
+              <div class="form-body">
+                <form id="formConta" onsubmit="salvarConta(event)">
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cNome" required></div>
+                    <div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="cValor" step="0.01" required></div>
+                  </div>
+                  <div class="form-group"><label class="form-label">Dia Vencimento</label><input type="number" class="form-input" id="cDia" min="1" max="31" required></div>
+                  <button type="submit" class="btn" id="btnConta">Adicionar</button>
+                </form>
+              </div>
+            </div>
+            
+            <div class="form-box" id="boxNovoObj">
+              <div class="form-head" onclick="toggleBox('boxNovoObj')">
+                <span class="form-head-icon">🎯</span>
+                <span class="form-head-title">Novo Objetivo</span>
+                <span class="form-head-arrow">▼</span>
+              </div>
+              <div class="form-body">
+                <form id="formObj" onsubmit="salvarObj(event)">
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="oNome" required></div>
+                    <div class="form-group"><label class="form-label">Meta</label><input type="number" class="form-input" id="oMeta" step="0.01" required></div>
+                  </div>
+                  <button type="submit" class="btn" id="btnObj">Adicionar</button>
+                </form>
               </div>
             </div>
           </div>
@@ -411,7 +411,7 @@ function toggleBox(id){
   if(b){b.classList.toggle('closed');localStorage.setItem('box_'+id,b.classList.contains('closed')?'1':'0')}
 }
 function restoreBoxes(){
-  ['boxContas','boxNovaConta','boxNovoObj','boxNovoCartao'].forEach(function(id){
+  ['boxContas','boxNovaConta','boxNovoObj','boxNovoCartao','boxLanc'].forEach(function(id){
     var s=localStorage.getItem('box_'+id);
     var b=document.getElementById(id);
     if(b&&s==='1')b.classList.add('closed');
@@ -490,7 +490,6 @@ function calcMesFatura(dataCompra, nomeCartao){
   var anoCompra=dt.getFullYear();
   var diaFechamento=cartao.diaFechamento||1;
   
-  // Se a compra foi DEPOIS do fechamento, vai para o próximo mês
   if(diaCompra > diaFechamento){
     mesCompra++;
     if(mesCompra > 11){
@@ -510,7 +509,6 @@ function calcParcelas(item){
   var vp=item.valor/(item.parcelas||1);
   var tot=item.parcelas||1;
   
-  // Primeira parcela: usar mês da fatura baseado no fechamento
   var mesBase=calcMesFatura(item.data, item.cartao);
   if(!mesBase)mesBase=getMesAno(item.data);
   
@@ -564,7 +562,7 @@ function verificarVencidas(){
 }
 
 // =============================================
-// RESUMO - COM LÓGICA CORRETA DE FECHAMENTO
+// RESUMO
 // =============================================
 function atualizarResumo(){
   var mes=getMesFiltrado();
@@ -584,21 +582,17 @@ function atualizarResumo(){
     var isCred=(fp==='credito');
     
     if(isCred && tipo==='saida'){
-      // CRÉDITO: usar mês da fatura baseado no fechamento do cartão
       if(it.parcelas > 1){
-        // Parcelado
         calcParcelas(it).forEach(function(p){
           if(p.mes<=mes){patrim-=p.valor;if(!isAloc)saiAcum+=p.valor}
           if(p.mes===mes&&!isAloc)saiMes+=p.valor;
         });
       } else {
-        // À vista (1x) - também usa o fechamento
         var mesFat=calcMesFatura(it.data, it.cartao);
         if(mesFat && mesFat<=mes){patrim-=it.valor;if(!isAloc)saiAcum+=it.valor}
         if(mesFat===mes&&!isAloc)saiMes+=it.valor;
       }
     } else {
-      // PIX, Dinheiro, Débito - usa a data real
       var val=it.valor;
       if(mesIt<=mes){
         if(tipo==='entrada'){patrim+=val;if(!isAloc)entAcum+=val;if(isRes)reserva+=val;if(isObj)objAcum+=val}
@@ -697,7 +691,6 @@ function graficosDiarios(){
     if(!dt)return;
     
     if(fp==='credito'){
-      // Crédito: usar mês da fatura
       if(it.parcelas>1){
         calcParcelas(it).forEach(function(pc){
           if(pc.mes===mes) gastos[dt.getDate()-1]+=pc.valor;
@@ -707,7 +700,6 @@ function graficosDiarios(){
         if(mesFat===mes) gastos[dt.getDate()-1]+=it.valor;
       }
     }else{
-      // Outros: usar data real
       if(getMesAno(it.data)===mes) gastos[dt.getDate()-1]+=it.valor;
     }
   });
@@ -717,7 +709,7 @@ function graficosDiarios(){
   charts.diario=new Chart(ctx,{
     type:'line',
     data:{labels:labels,datasets:[{data:gastos,borderColor:'#C45C4D',backgroundColor:'rgba(196,92,77,.1)',fill:true,tension:.3,pointRadius:0,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:8},callback:function(v){return fmtCurto(v)}},beginAtZero:true}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:0}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},callback:function(v){return fmtCurto(v)}},beginAtZero:true}}}
   });
 }
 
@@ -745,14 +737,14 @@ function graficosCategorias(){
   });
   
   var ent=Object.entries(gastos).sort(function(a,b){return b[1]-a[1]}).slice(0,6);
-  var labels=ent.map(function(e){return e[0].substring(0,10)});
+  var labels=ent.map(function(e){return e[0].substring(0,12)});
   var vals=ent.map(function(e){return e[1]});
   
   if(charts.cat)charts.cat.destroy();
   charts.cat=new Chart(ctx,{
     type:'bar',
     data:{labels:labels,datasets:[{data:vals,backgroundColor:'#593825',borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:7},maxRotation:45,minRotation:45}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:8},callback:function(v){return fmtCurto(v)}},beginAtZero:true}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9},maxRotation:45,minRotation:45}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},callback:function(v){return fmtCurto(v)}},beginAtZero:true}}}
   });
 }
 
@@ -792,7 +784,7 @@ function graficosFaturas(){
   charts.fat=new Chart(ctx,{
     type:'bar',
     data:{labels:labels,datasets:datasets},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:8}},stacked:true},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:8},callback:function(v){return fmtCurto(v)}},stacked:true,beginAtZero:true}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}},stacked:true},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},callback:function(v){return fmtCurto(v)}},stacked:true,beginAtZero:true}}}
   });
 }
 
@@ -1040,4 +1032,3 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
 </script>
 </body>
 </html>
-
