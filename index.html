@@ -928,5 +928,83 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
 </script>
 </body>
 </html>
+  var cat=document.getElementById('fCat').value;
+  var cn=norm(cat);
+  var desc=document.getElementById('fDesc').value;
+  
+  if(cn==='investimentos'||cn==='conta fixa'){
+    var sub=document.getElementById('fSub');
+    if(sub&&sub.value){cat=sub.value;if(!desc)desc=sub.options[sub.selectedIndex].textContent.split(' - ')[0].replace(/^[🛡️🎯]\s*/,'')}
+  }
+  
+  var lanc={
+    data:document.getElementById('fData').value,
+    tipo:document.getElementById('fTipo').value,
+    categoria:cat,
+    valor:parseFloat(document.getElementById('fValor').value)||0,
+    descricao:desc||cat,
+    formaPagamento:fp,
+    cartao:isCred?document.getElementById('fCartao').value:'',
+    parcelas:isCred?parseInt(document.getElementById('fParc').value)||1:1,
+    parcelaAtual:1
+  };
+  
+  var r=await apiPost('adicionarLancamento',lanc);
+  btn.disabled=false;btn.innerHTML='Salvar';
+  if(r.success){
+    toast('Salvo!','ok');
+    document.getElementById('formLanc').reset();
+    document.getElementById('fData').value=new Date().toISOString().split('T')[0];
+    toggleCredit();onCatChange();carregarDados();
+  }else toast(r.message||'Erro','err');
+}
 
+async function salvarConta(e){
+  e.preventDefault();
+  var btn=document.getElementById('btnConta');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';
+  var ct={nome:document.getElementById('cNome').value,valor:parseFloat(document.getElementById('cValor').value)||0,diaVencimento:parseInt(document.getElementById('cDia').value)||1};
+  var r=await apiPost('adicionarContaFixa',ct);
+  btn.disabled=false;btn.innerHTML='Adicionar';
+  if(r.success){toast('Adicionado!','ok');document.getElementById('formConta').reset();carregarDados()}else toast(r.message||'Erro','err');
+}
 
+async function salvarObj(e){
+  e.preventDefault();
+  var btn=document.getElementById('btnObj');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';
+  var obj={nome:document.getElementById('oNome').value,meta:parseFloat(document.getElementById('oMeta').value)||0};
+  var r=await apiPost('adicionarObjetivo',obj);
+  btn.disabled=false;btn.innerHTML='Adicionar';
+  if(r.success){toast('Adicionado!','ok');document.getElementById('formObj').reset();carregarDados()}else toast(r.message||'Erro','err');
+}
+
+async function salvarCartao(e){
+  e.preventDefault();
+  var btn=document.getElementById('btnCartao');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>';
+  var cart={
+    nome:document.getElementById('cartNome').value,
+    limite:parseFloat(document.getElementById('cartLimite').value)||0,
+    diaFechamento:parseInt(document.getElementById('cartFechamento').value)||1,
+    diaVencimento:parseInt(document.getElementById('cartVencimento').value)||10
+  };
+  var r=await apiPost('adicionarCartao',cart);
+  btn.disabled=false;btn.innerHTML='Adicionar';
+  if(r.success){toast('Cartão adicionado!','ok');document.getElementById('formCartao').reset();carregarDados()}else toast(r.message||'Erro','err');
+}
+
+function toast(msg,type){
+  var w=document.getElementById('toastWrap');
+  var t=document.createElement('div');
+  t.className='toast '+(type||'');
+  t.textContent=msg;
+  w.appendChild(t);
+  setTimeout(function(){t.remove()},3000);
+}
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js").catch(console.error)})}
+</script>
+</body>
+</html>
