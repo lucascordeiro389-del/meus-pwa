@@ -566,24 +566,29 @@ function atualizarCartoesGrid(){
   if(!carts.length){c.innerHTML='<div class="cartao-box"><div class="empty"><div class="empty-icon">💳</div><p>Sem cartões</p></div></div>';return}
   
   var info={};
-  carts.forEach(ct=>{info[ct.nome]={limite:ct.limite,atual:0}});
+  carts.forEach(function(ct){info[ct.nome]={limite:ct.limite,faturaAtual:0,comprometidoTotal:0}});
   
-  hist.forEach(it=>{
+  hist.forEach(function(it){
     if(norm(it.tipo)!=='saida'||norm(it.formaPagamento)!=='credito'||!it.cartao||!info[it.cartao])return;
-    if(it.parcelas>1){
-      calcParcelas(it).forEach(pc=>{
-        if(pc.mes===mes)info[it.cartao].atual+=pc.valor
-      })
-    }else{
-      var mf=calcMesFatura(it.data,it.cartao);
-      if(mf===mes)info[it.cartao].atual+=it.valor
-    }
+    
+    var parcelas=calcParcelas(it);
+    parcelas.forEach(function(pc){
+      // Soma todas as parcelas futuras (a partir do mês atual) para o comprometido total
+      if(pc.mes>=mes) info[it.cartao].comprometidoTotal+=pc.valor;
+      // Soma apenas a fatura do mês atual
+      if(pc.mes===mes) info[it.cartao].faturaAtual+=pc.valor;
+    });
   });
   
   function getIcon(n){var l=n.toLowerCase();if(l.includes('nubank'))return'nubank';if(l.includes('inter'))return'inter';if(l.includes('itau'))return'itau';if(l.includes('bradesco'))return'bradesco';if(l.includes('santander'))return'santander';if(l.includes('c6'))return'c6';return'default'}
+  
   var html='';
-  carts.forEach(ct=>{var x=info[ct.nome],disp=Math.max(0,x.limite-x.atual);html+='<div class="cartao-box"><button class="cartao-del" onclick="excluirCartao(\''+ct.nome.replace(/'/g,"\\'")+'\')">×</button><div class="cartao-icon '+getIcon(ct.nome)+'">💳</div><div class="cartao-nome">'+ct.nome+'</div><div class="cartao-fat">'+fmtMoeda(x.atual)+'</div><div class="cartao-disp">Disp: '+fmtCurto(disp)+'</div></div>'});
-  c.innerHTML=html
+  carts.forEach(function(ct){
+    var x=info[ct.nome];
+    var dispReal=Math.max(0,x.limite-x.comprometidoTotal);
+    html+='<div class="cartao-box"><button class="cartao-del" onclick="excluirCartao(\''+ct.nome.replace(/'/g,"\\'")+'\')">×</button><div class="cartao-icon '+getIcon(ct.nome)+'">💳</div><div class="cartao-nome">'+ct.nome+'</div><div class="cartao-fat">'+fmtMoeda(x.faturaAtual)+'</div><div class="cartao-disp">Disp: '+fmtCurto(dispReal)+'</div></div>';
+  });
+  c.innerHTML=html;
 }
 
 function atualizarCategorias(){var sel=document.getElementById('fCat');sel.innerHTML='';['Investimentos','Conta Fixa'].forEach(c=>{var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});var sep=document.createElement('option');sep.disabled=true;sep.textContent='──────────';sel.appendChild(sep);(data.categorias||[]).forEach(c=>{var cn=norm(c);if(cn.indexOf('objetivo:')===0||cn==='reserva de emergencia'||cn==='reserva'||cn==='conta fixa'||cn==='investimentos')return;var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});onCatChange()}
@@ -610,3 +615,4 @@ function toast(msg,type){var w=document.getElementById('toastWrap'),t=document.c
 <script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js").catch(console.error))</script>
 </body>
 </html>
+
