@@ -52,8 +52,8 @@
     .resumo-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
     .resumo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
     .card{background:var(--card-bg);border-radius:10px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-    .card-label{font-size:9px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
-    .card-value{font-size:15px;font-weight:700}
+    .card-label{font-size:7px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+    .card-value{font-size:10px;font-weight:700}
     .card-value.green{color:var(--success)}
     .card-value.red{color:var(--danger)}
     
@@ -72,7 +72,7 @@
     .obj-card:first-child:nth-last-child(3),.obj-card:first-child:nth-last-child(3)~.obj-card{flex:1 1 calc(33.33% - 6px);min-width:calc(33.33% - 6px)}
     .obj-chart{position:relative;width:40px;height:40px;margin:0 auto 4px}
     .obj-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:700;color:var(--success)}
-    .obj-name{font-size:10px;font-weight:600;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .obj-name{font-size:8px;font-weight:600;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .obj-del{position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
     .obj-card:hover .obj-del,.obj-card:active .obj-del{display:flex}
     
@@ -615,4 +615,5 @@ function toast(msg,type){var w=document.getElementById('toastWrap'),t=document.c
 <script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js").catch(console.error))</script>
 </body>
 </html>
+
 
