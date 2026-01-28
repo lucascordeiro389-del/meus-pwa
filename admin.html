@@ -1,4 +1,265 @@
-tab-btn.active {
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu$ - Painel Admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #593825;
+      --primary-dark: #3D2518;
+      --secondary: #9D9167;
+      --background: #FAF9F7;
+      --card-bg: #FFFFFF;
+      --success: #4A9B6E;
+      --danger: #C45C4D;
+      --text-dark: #1A1A1A;
+      --text-medium: #666;
+      --text-light: #999;
+      --border: #F0EEEB;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+      padding: 20px 30px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 { font-size: 24px; display: flex; align-items: center; gap: 12px; }
+    .header-badge {
+      background: rgba(255,255,255,.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+    .stat-icon { font-size: 32px; margin-bottom: 10px; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .card-body { padding: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-medium); margin-bottom: 6px; }
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color .2s;
+    }
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-hint { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-secondary { background: var(--border); color: var(--text-dark); }
+    .btn-sm { padding: 8px 16px; font-size: 12px; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; }
+    td { font-size: 14px; }
+    tr:hover td { background: rgba(89,56,37,.02); }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-active { background: rgba(74,155,110,.1); color: var(--success); }
+    .status-pending { background: rgba(232,169,64,.1); color: #E8A940; }
+    .link-box {
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      margin-top: 8px;
+    }
+    .link-box.success {
+      background: rgba(74,155,110,.1);
+      border-color: var(--success);
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--card-bg);
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+    .modal-body { padding: 20px; }
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .steps { margin: 20px 0; }
+    .step {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-weight: 600; margin-bottom: 4px; }
+    .step-desc { font-size: 13px; color: var(--text-medium); line-height: 1.5; }
+    .copy-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .copy-btn.copied { background: var(--success); }
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .alert-info { background: rgba(89,56,37,.05); border-left: 4px solid var(--primary); }
+    .alert-success { background: rgba(74,155,110,.1); border-left: 4px solid var(--success); }
+    .alert-icon { font-size: 20px; }
+    .alert-content { flex: 1; }
+    .alert-title { font-weight: 600; margin-bottom: 4px; }
+    .alert-text { font-size: 13px; color: var(--text-medium); }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .5; }
+    .empty-title { font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; }
+    .empty-text { font-size: 14px; margin-bottom: 20px; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0;
+    }
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      background: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all .2s;
+    }
+    .tab-btn:hover { color: var(--text-dark); }
+    .tab-btn.active {
       color: var(--primary);
       border-bottom-color: var(--primary);
     }
@@ -12,7 +273,6 @@ tab-btn.active {
   </header>
   
   <div class="container">
-    <!-- Stats -->
     <div class="stats">
       <div class="stat-card">
         <div class="stat-icon">👥</div>
@@ -36,7 +296,6 @@ tab-btn.active {
       </div>
     </div>
     
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('clientes')">👥 Clientes</button>
       <button class="tab-btn" onclick="showTab('novo')">➕ Novo Cliente</button>
@@ -44,7 +303,6 @@ tab-btn.active {
       <button class="tab-btn" onclick="showTab('config')">⚙️ Configurações</button>
     </div>
     
-    <!-- Tab: Clientes -->
     <div class="tab-content active" id="tab-clientes">
       <div class="card">
         <div class="card-header">
@@ -63,9 +321,7 @@ tab-btn.active {
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody id="clientesTable">
-                <!-- Preenchido via JS -->
-              </tbody>
+              <tbody id="clientesTable"></tbody>
             </table>
           </div>
           <div class="empty-state" id="emptyClientes" style="display:none">
@@ -78,7 +334,6 @@ tab-btn.active {
       </div>
     </div>
     
-    <!-- Tab: Novo Cliente -->
     <div class="tab-content" id="tab-novo">
       <div class="card">
         <div class="card-header">
@@ -89,10 +344,7 @@ tab-btn.active {
             <div class="alert-icon">💡</div>
             <div class="alert-content">
               <div class="alert-title">Como funciona?</div>
-              <div class="alert-text">
-                Preencha os dados do cliente e cole a URL da API do Google Apps Script. 
-                O sistema irá gerar um link único para o cliente acessar seu painel financeiro.
-              </div>
+              <div class="alert-text">Preencha os dados do cliente e cole a URL da API do Google Apps Script. O sistema irá gerar um link único para o cliente acessar seu painel financeiro.</div>
             </div>
           </div>
           
@@ -119,12 +371,9 @@ tab-btn.active {
               <textarea class="form-textarea" id="clienteObs" placeholder="Anotações sobre o cliente..."></textarea>
             </div>
             
-            <button type="submit" class="btn btn-primary" id="btnSalvarCliente">
-              💾 Salvar e Gerar Link
-            </button>
+            <button type="submit" class="btn btn-primary" id="btnSalvarCliente">💾 Salvar e Gerar Link</button>
           </form>
           
-          <!-- Link gerado -->
           <div id="linkGerado" style="display:none; margin-top:24px;">
             <div class="alert alert-success">
               <div class="alert-icon">✅</div>
@@ -140,7 +389,6 @@ tab-btn.active {
       </div>
     </div>
     
-    <!-- Tab: Instruções -->
     <div class="tab-content" id="tab-instrucoes">
       <div class="card">
         <div class="card-header">
@@ -152,65 +400,35 @@ tab-btn.active {
               <div class="step-number">1</div>
               <div class="step-content">
                 <div class="step-title">Criar a Planilha do Cliente</div>
-                <div class="step-desc">
-                  Acesse sua planilha modelo no Google Sheets e faça uma cópia:<br>
-                  <strong>Arquivo → Fazer uma cópia</strong><br>
-                  Renomeie para "Meu$ - [Nome do Cliente]"
-                </div>
+                <div class="step-desc">Acesse sua planilha modelo no Google Sheets e faça uma cópia:<br><strong>Arquivo → Fazer uma cópia</strong><br>Renomeie para "Meu$ - [Nome do Cliente]"</div>
               </div>
             </div>
-            
             <div class="step">
               <div class="step-number">2</div>
               <div class="step-content">
                 <div class="step-title">Abrir o Apps Script</div>
-                <div class="step-desc">
-                  Na planilha copiada, vá em:<br>
-                  <strong>Extensões → Apps Script</strong><br>
-                  O código já estará lá (foi copiado junto com a planilha)
-                </div>
+                <div class="step-desc">Na planilha copiada, vá em:<br><strong>Extensões → Apps Script</strong><br>O código já estará lá (foi copiado junto com a planilha)</div>
               </div>
             </div>
-            
             <div class="step">
               <div class="step-number">3</div>
               <div class="step-content">
                 <div class="step-title">Fazer o Deploy</div>
-                <div class="step-desc">
-                  No Apps Script, clique em:<br>
-                  <strong>Implantar → Nova implantação</strong><br><br>
-                  Configure:<br>
-                  • Tipo: <strong>App da Web</strong><br>
-                  • Executar como: <strong>Eu</strong><br>
-                  • Quem pode acessar: <strong>Qualquer pessoa</strong><br><br>
-                  Clique em <strong>Implantar</strong> e copie a URL gerada
-                </div>
+                <div class="step-desc">No Apps Script, clique em:<br><strong>Implantar → Nova implantação</strong><br><br>Configure:<br>• Tipo: <strong>App da Web</strong><br>• Executar como: <strong>Eu</strong><br>• Quem pode acessar: <strong>Qualquer pessoa</strong><br><br>Clique em <strong>Implantar</strong> e copie a URL gerada</div>
               </div>
             </div>
-            
             <div class="step">
               <div class="step-number">4</div>
               <div class="step-content">
                 <div class="step-title">Cadastrar no Admin</div>
-                <div class="step-desc">
-                  Volte aqui no painel Admin, vá em "Novo Cliente" e:<br>
-                  • Preencha o nome do cliente<br>
-                  • Cole a URL da API<br>
-                  • Clique em "Salvar e Gerar Link"
-                </div>
+                <div class="step-desc">Volte aqui no painel Admin, vá em "Novo Cliente" e:<br>• Preencha o nome do cliente<br>• Cole a URL da API<br>• Clique em "Salvar e Gerar Link"</div>
               </div>
             </div>
-            
             <div class="step">
               <div class="step-number">5</div>
               <div class="step-content">
                 <div class="step-title">Enviar para o Cliente</div>
-                <div class="step-desc">
-                  Envie o link gerado para o cliente. Ele pode:<br>
-                  • Acessar pelo navegador<br>
-                  • Instalar como app (Adicionar à tela inicial)<br><br>
-                  O cliente só terá acesso aos próprios dados!
-                </div>
+                <div class="step-desc">Envie o link gerado para o cliente. Ele pode:<br>• Acessar pelo navegador<br>• Instalar como app (Adicionar à tela inicial)<br><br>O cliente só terá acesso aos próprios dados!</div>
               </div>
             </div>
           </div>
@@ -232,7 +450,6 @@ tab-btn.active {
       </div>
     </div>
     
-    <!-- Tab: Configurações -->
     <div class="tab-content" id="tab-config">
       <div class="card">
         <div class="card-header">
@@ -273,16 +490,13 @@ tab-btn.active {
     </div>
   </div>
   
-  <!-- Modal Ver Cliente -->
   <div class="modal-overlay" id="modalCliente">
     <div class="modal">
       <div class="modal-header">
         <div class="modal-title">👤 Detalhes do Cliente</div>
         <button class="modal-close" onclick="fecharModal()">&times;</button>
       </div>
-      <div class="modal-body" id="modalClienteBody">
-        <!-- Preenchido via JS -->
-      </div>
+      <div class="modal-body" id="modalClienteBody"></div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>
       </div>
@@ -290,54 +504,30 @@ tab-btn.active {
   </div>
 
 <script>
-// ========== STORAGE ==========
 var DB_KEY = 'meus_admin_clientes';
 var CONFIG_KEY = 'meus_admin_config';
 
 function getClientes() {
-  try {
-    return JSON.parse(localStorage.getItem(DB_KEY)) || [];
-  } catch(e) {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch(e) { return []; }
 }
-
-function saveClientes(clientes) {
-  localStorage.setItem(DB_KEY, JSON.stringify(clientes));
-}
-
+function saveClientes(clientes) { localStorage.setItem(DB_KEY, JSON.stringify(clientes)); }
 function getConfig() {
-  try {
-    return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
-  } catch(e) {
-    return {};
-  }
+  try { return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {}; } catch(e) { return {}; }
 }
+function saveConfig(config) { localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); }
 
-function saveConfig(config) {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
-}
-
-// ========== TABS ==========
 function showTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    btn.classList.remove('active');
-  });
-  document.querySelectorAll('.tab-content').forEach(function(content) {
-    content.classList.remove('active');
-  });
-  
+  document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(content) { content.classList.remove('active'); });
   document.querySelector('.tab-btn[onclick*="' + tab + '"]').classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
 }
 
-// ========== CLIENTES ==========
 function renderClientes() {
   var clientes = getClientes();
   var tbody = document.getElementById('clientesTable');
   var empty = document.getElementById('emptyClientes');
   
-  // Stats
   document.getElementById('totalClientes').textContent = clientes.length;
   document.getElementById('clientesAtivos').textContent = clientes.filter(function(c) { return c.ativo !== false; }).length;
   document.getElementById('linksGerados').textContent = clientes.length;
@@ -354,7 +544,6 @@ function renderClientes() {
   }
   
   empty.style.display = 'none';
-  
   var html = '';
   clientes.forEach(function(cliente, index) {
     html += '<tr>';
@@ -369,27 +558,18 @@ function renderClientes() {
     html += '</td>';
     html += '</tr>';
   });
-  
   tbody.innerHTML = html;
 }
 
 function salvarCliente(e) {
   e.preventDefault();
-  
   var nome = document.getElementById('clienteNome').value.trim();
   var email = document.getElementById('clienteEmail').value.trim();
   var api = document.getElementById('clienteApi').value.trim();
   var obs = document.getElementById('clienteObs').value.trim();
   
-  if (!nome || !api) {
-    alert('Preencha o nome e a URL da API');
-    return;
-  }
-  
-  if (!api.includes('script.google.com')) {
-    alert('A URL da API deve ser do Google Apps Script');
-    return;
-  }
+  if (!nome || !api) { alert('Preencha o nome e a URL da API'); return; }
+  if (!api.includes('script.google.com')) { alert('A URL da API deve ser do Google Apps Script'); return; }
   
   var config = getConfig();
   var urlBase = config.urlBase || 'https://meus-pwa.pages.dev';
@@ -408,15 +588,10 @@ function salvarCliente(e) {
   clientes.push(cliente);
   saveClientes(clientes);
   
-  // Gerar link
   var link = urlBase + '?api=' + encodeURIComponent(api);
-  
   document.getElementById('linkCliente').textContent = link;
   document.getElementById('linkGerado').style.display = 'block';
-  
-  // Limpar form
   document.getElementById('formNovoCliente').reset();
-  
   renderClientes();
 }
 
@@ -432,18 +607,15 @@ function verCliente(index) {
   html += '<div class="form-group"><label class="form-label">Email</label><div>' + (cliente.email || '-') + '</div></div>';
   html += '<div class="form-group"><label class="form-label">Criado em</label><div>' + formatarData(cliente.criadoEm) + '</div></div>';
   html += '<div class="form-group"><label class="form-label">URL da API</label><div class="link-box" style="font-size:10px">' + cliente.apiUrl + '</div></div>';
-  html += '<div class="form-group"><label class="form-label">Link do Cliente</label><div class="link-box success">' + link + '</div><button class="copy-btn" onclick="copiarTexto(\'' + link + '\')">📋 Copiar</button></div>';
+  html += '<div class="form-group"><label class="form-label">Link do Cliente</label><div class="link-box success">' + link + '</div><button class="copy-btn" onclick="copiarTexto(\'' + link.replace(/'/g, "\\'") + '\')">📋 Copiar</button></div>';
   if (cliente.observacoes) {
     html += '<div class="form-group"><label class="form-label">Observações</label><div>' + cliente.observacoes + '</div></div>';
   }
-  
   document.getElementById('modalClienteBody').innerHTML = html;
   document.getElementById('modalCliente').classList.add('show');
 }
 
-function fecharModal() {
-  document.getElementById('modalCliente').classList.remove('show');
-}
+function fecharModal() { document.getElementById('modalCliente').classList.remove('show'); }
 
 function copiarLinkCliente(index) {
   var clientes = getClientes();
@@ -451,38 +623,30 @@ function copiarLinkCliente(index) {
   var config = getConfig();
   var urlBase = config.urlBase || 'https://meus-pwa.pages.dev';
   var link = urlBase + '?api=' + encodeURIComponent(cliente.apiUrl);
-  
   copiarTexto(link);
   alert('Link copiado!');
 }
 
 function excluirCliente(index) {
   if (!confirm('Excluir este cliente?')) return;
-  
   var clientes = getClientes();
   clientes.splice(index, 1);
   saveClientes(clientes);
-  
   renderClientes();
 }
 
 function copiarLink() {
   var link = document.getElementById('linkCliente').textContent;
   copiarTexto(link);
-  
   var btn = document.querySelector('#linkGerado .copy-btn');
   btn.textContent = '✅ Copiado!';
   btn.classList.add('copied');
-  setTimeout(function() {
-    btn.textContent = '📋 Copiar Link';
-    btn.classList.remove('copied');
-  }, 2000);
+  setTimeout(function() { btn.textContent = '📋 Copiar Link'; btn.classList.remove('copied'); }, 2000);
 }
 
 function copiarTexto(texto) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(texto);
-  } else {
+  if (navigator.clipboard) { navigator.clipboard.writeText(texto); }
+  else {
     var input = document.createElement('input');
     input.value = texto;
     document.body.appendChild(input);
@@ -492,7 +656,6 @@ function copiarTexto(texto) {
   }
 }
 
-// ========== CONFIGURAÇÕES ==========
 function carregarConfiguracoes() {
   var config = getConfig();
   document.getElementById('configUrlBase').value = config.urlBase || '';
@@ -519,12 +682,7 @@ function salvarUrlBase() {
 }
 
 function exportarDados() {
-  var dados = {
-    clientes: getClientes(),
-    config: getConfig(),
-    exportadoEm: new Date().toISOString()
-  };
-  
+  var dados = { clientes: getClientes(), config: getConfig(), exportadoEm: new Date().toISOString() };
   var blob = new Blob([JSON.stringify(dados, null, 2)], {type: 'application/json'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
@@ -547,9 +705,7 @@ function importarDados() {
         if (dados.config) saveConfig(dados.config);
         alert('Dados importados com sucesso!');
         location.reload();
-      } catch(err) {
-        alert('Erro ao importar: arquivo inválido');
-      }
+      } catch(err) { alert('Erro ao importar: arquivo inválido'); }
     };
     reader.readAsText(file);
   };
@@ -559,20 +715,17 @@ function importarDados() {
 function limparDados() {
   if (!confirm('ATENÇÃO: Isso irá apagar TODOS os dados de clientes. Continuar?')) return;
   if (!confirm('Tem certeza? Esta ação não pode ser desfeita!')) return;
-  
   localStorage.removeItem(DB_KEY);
   localStorage.removeItem(CONFIG_KEY);
   location.reload();
 }
 
-// ========== UTILS ==========
 function formatarData(dataStr) {
   if (!dataStr) return '-';
   var d = new Date(dataStr);
   return d.toLocaleDateString('pt-BR');
 }
 
-// ========== INIT ==========
 document.addEventListener('DOMContentLoaded', function() {
   renderClientes();
   carregarConfiguracoes();
