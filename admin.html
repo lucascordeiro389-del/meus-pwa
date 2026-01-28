@@ -1,0 +1,582 @@
+tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>💰 Meu$ <span class="header-badge">Painel Admin</span></h1>
+  </header>
+  
+  <div class="container">
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="totalClientes">0</div>
+        <div class="stat-label">Clientes Cadastrados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" id="clientesAtivos">0</div>
+        <div class="stat-label">Clientes Ativos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔗</div>
+        <div class="stat-value" id="linksGerados">0</div>
+        <div class="stat-label">Links Gerados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value" id="ultimoCadastro">-</div>
+        <div class="stat-label">Último Cadastro</div>
+      </div>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('clientes')">👥 Clientes</button>
+      <button class="tab-btn" onclick="showTab('novo')">➕ Novo Cliente</button>
+      <button class="tab-btn" onclick="showTab('instrucoes')">📖 Instruções</button>
+      <button class="tab-btn" onclick="showTab('config')">⚙️ Configurações</button>
+    </div>
+    
+    <!-- Tab: Clientes -->
+    <div class="tab-content active" id="tab-clientes">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👥 Lista de Clientes</div>
+          <button class="btn btn-primary btn-sm" onclick="showTab('novo')">➕ Novo Cliente</button>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Criado em</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clientesTable">
+                <!-- Preenchido via JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="emptyClientes" style="display:none">
+            <div class="empty-icon">👥</div>
+            <div class="empty-title">Nenhum cliente cadastrado</div>
+            <div class="empty-text">Comece adicionando seu primeiro cliente</div>
+            <button class="btn btn-primary" onclick="showTab('novo')">➕ Adicionar Cliente</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab: Novo Cliente -->
+    <div class="tab-content" id="tab-novo">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">➕ Cadastrar Novo Cliente</div>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <div class="alert-icon">💡</div>
+            <div class="alert-content">
+              <div class="alert-title">Como funciona?</div>
+              <div class="alert-text">
+                Preencha os dados do cliente e cole a URL da API do Google Apps Script. 
+                O sistema irá gerar um link único para o cliente acessar seu painel financeiro.
+              </div>
+            </div>
+          </div>
+          
+          <form id="formNovoCliente" onsubmit="salvarCliente(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Nome do Cliente *</label>
+                <input type="text" class="form-input" id="clienteNome" placeholder="Ex: João Silva" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="clienteEmail" placeholder="Ex: joao@email.com">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">URL da API (Google Apps Script) *</label>
+              <input type="text" class="form-input" id="clienteApi" placeholder="https://script.google.com/macros/s/.../exec" required>
+              <div class="form-hint">Cole aqui a URL do Web App após fazer o deploy no Apps Script</div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Observações</label>
+              <textarea class="form-textarea" id="clienteObs" placeholder="Anotações sobre o cliente..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="btnSalvarCliente">
+              💾 Salvar e Gerar Link
+            </button>
+          </form>
+          
+          <!-- Link gerado -->
+          <div id="linkGerado" style="display:none; margin-top:24px;">
+            <div class="alert alert-success">
+              <div class="alert-icon">✅</div>
+              <div class="alert-content">
+                <div class="alert-title">Cliente cadastrado com sucesso!</div>
+                <div class="alert-text">Envie o link abaixo para o cliente:</div>
+              </div>
+            </div>
+            <div class="link-box success" id="linkCliente"></div>
+            <button class="copy-btn" onclick="copiarLink()">📋 Copiar Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab: Instruções -->
+    <div class="tab-content" id="tab-instrucoes">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📖 Como Configurar um Novo Cliente</div>
+        </div>
+        <div class="card-body">
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <div class="step-title">Criar a Planilha do Cliente</div>
+                <div class="step-desc">
+                  Acesse sua planilha modelo no Google Sheets e faça uma cópia:<br>
+                  <strong>Arquivo → Fazer uma cópia</strong><br>
+                  Renomeie para "Meu$ - [Nome do Cliente]"
+                </div>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <div class="step-title">Abrir o Apps Script</div>
+                <div class="step-desc">
+                  Na planilha copiada, vá em:<br>
+                  <strong>Extensões → Apps Script</strong><br>
+                  O código já estará lá (foi copiado junto com a planilha)
+                </div>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <div class="step-title">Fazer o Deploy</div>
+                <div class="step-desc">
+                  No Apps Script, clique em:<br>
+                  <strong>Implantar → Nova implantação</strong><br><br>
+                  Configure:<br>
+                  • Tipo: <strong>App da Web</strong><br>
+                  • Executar como: <strong>Eu</strong><br>
+                  • Quem pode acessar: <strong>Qualquer pessoa</strong><br><br>
+                  Clique em <strong>Implantar</strong> e copie a URL gerada
+                </div>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <div class="step-title">Cadastrar no Admin</div>
+                <div class="step-desc">
+                  Volte aqui no painel Admin, vá em "Novo Cliente" e:<br>
+                  • Preencha o nome do cliente<br>
+                  • Cole a URL da API<br>
+                  • Clique em "Salvar e Gerar Link"
+                </div>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">5</div>
+              <div class="step-content">
+                <div class="step-title">Enviar para o Cliente</div>
+                <div class="step-desc">
+                  Envie o link gerado para o cliente. Ele pode:<br>
+                  • Acessar pelo navegador<br>
+                  • Instalar como app (Adicionar à tela inicial)<br><br>
+                  O cliente só terá acesso aos próprios dados!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔗 Sua URL Base do PWA</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">URL onde o Meu$ está hospedado</label>
+            <input type="text" class="form-input" id="urlBasePwa" placeholder="https://meus-pwa.pages.dev">
+            <div class="form-hint">Esta é a URL do Cloudflare Pages onde você hospedou o index.html</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="salvarUrlBase()">💾 Salvar</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab: Configurações -->
+    <div class="tab-content" id="tab-config">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚙️ Configurações do Sistema</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">URL Base do PWA</label>
+            <input type="text" class="form-input" id="configUrlBase" placeholder="https://meus-pwa.pages.dev">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">URL da Planilha Modelo</label>
+            <input type="text" class="form-input" id="configPlanilhaModelo" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <div class="form-hint">Link para sua planilha modelo (para referência)</div>
+          </div>
+          
+          <button class="btn btn-primary" onclick="salvarConfiguracoes()">💾 Salvar Configurações</button>
+          
+          <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border);">
+          
+          <div class="form-group">
+            <label class="form-label">Exportar Dados</label>
+            <div class="form-hint" style="margin-bottom: 12px;">Faça backup dos dados dos clientes cadastrados</div>
+            <button class="btn btn-secondary btn-sm" onclick="exportarDados()">📥 Exportar JSON</button>
+            <button class="btn btn-secondary btn-sm" onclick="importarDados()">📤 Importar JSON</button>
+          </div>
+          
+          <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border);">
+          
+          <div class="form-group">
+            <label class="form-label" style="color: var(--danger);">Zona de Perigo</label>
+            <div class="form-hint" style="margin-bottom: 12px;">Ações irreversíveis</div>
+            <button class="btn btn-danger btn-sm" onclick="limparDados()">🗑️ Limpar Todos os Dados</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Ver Cliente -->
+  <div class="modal-overlay" id="modalCliente">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">👤 Detalhes do Cliente</div>
+        <button class="modal-close" onclick="fecharModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalClienteBody">
+        <!-- Preenchido via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ========== STORAGE ==========
+var DB_KEY = 'meus_admin_clientes';
+var CONFIG_KEY = 'meus_admin_config';
+
+function getClientes() {
+  try {
+    return JSON.parse(localStorage.getItem(DB_KEY)) || [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveClientes(clientes) {
+  localStorage.setItem(DB_KEY, JSON.stringify(clientes));
+}
+
+function getConfig() {
+  try {
+    return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+  } catch(e) {
+    return {};
+  }
+}
+
+function saveConfig(config) {
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+}
+
+// ========== TABS ==========
+function showTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-content').forEach(function(content) {
+    content.classList.remove('active');
+  });
+  
+  document.querySelector('.tab-btn[onclick*="' + tab + '"]').classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ========== CLIENTES ==========
+function renderClientes() {
+  var clientes = getClientes();
+  var tbody = document.getElementById('clientesTable');
+  var empty = document.getElementById('emptyClientes');
+  
+  // Stats
+  document.getElementById('totalClientes').textContent = clientes.length;
+  document.getElementById('clientesAtivos').textContent = clientes.filter(function(c) { return c.ativo !== false; }).length;
+  document.getElementById('linksGerados').textContent = clientes.length;
+  
+  if (clientes.length > 0) {
+    var ultimo = clientes[clientes.length - 1];
+    document.getElementById('ultimoCadastro').textContent = formatarData(ultimo.criadoEm);
+  }
+  
+  if (clientes.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  
+  var html = '';
+  clientes.forEach(function(cliente, index) {
+    html += '<tr>';
+    html += '<td><strong>' + cliente.nome + '</strong></td>';
+    html += '<td>' + (cliente.email || '-') + '</td>';
+    html += '<td><span class="status-badge ' + (cliente.ativo !== false ? 'status-active' : 'status-pending') + '">' + (cliente.ativo !== false ? 'Ativo' : 'Inativo') + '</span></td>';
+    html += '<td>' + formatarData(cliente.criadoEm) + '</td>';
+    html += '<td>';
+    html += '<button class="btn btn-secondary btn-sm" onclick="verCliente(' + index + ')" style="margin-right:4px">👁️</button>';
+    html += '<button class="btn btn-secondary btn-sm" onclick="copiarLinkCliente(' + index + ')" style="margin-right:4px">🔗</button>';
+    html += '<button class="btn btn-danger btn-sm" onclick="excluirCliente(' + index + ')">🗑️</button>';
+    html += '</td>';
+    html += '</tr>';
+  });
+  
+  tbody.innerHTML = html;
+}
+
+function salvarCliente(e) {
+  e.preventDefault();
+  
+  var nome = document.getElementById('clienteNome').value.trim();
+  var email = document.getElementById('clienteEmail').value.trim();
+  var api = document.getElementById('clienteApi').value.trim();
+  var obs = document.getElementById('clienteObs').value.trim();
+  
+  if (!nome || !api) {
+    alert('Preencha o nome e a URL da API');
+    return;
+  }
+  
+  if (!api.includes('script.google.com')) {
+    alert('A URL da API deve ser do Google Apps Script');
+    return;
+  }
+  
+  var config = getConfig();
+  var urlBase = config.urlBase || 'https://meus-pwa.pages.dev';
+  
+  var cliente = {
+    id: Date.now(),
+    nome: nome,
+    email: email,
+    apiUrl: api,
+    observacoes: obs,
+    criadoEm: new Date().toISOString(),
+    ativo: true
+  };
+  
+  var clientes = getClientes();
+  clientes.push(cliente);
+  saveClientes(clientes);
+  
+  // Gerar link
+  var link = urlBase + '?api=' + encodeURIComponent(api);
+  
+  document.getElementById('linkCliente').textContent = link;
+  document.getElementById('linkGerado').style.display = 'block';
+  
+  // Limpar form
+  document.getElementById('formNovoCliente').reset();
+  
+  renderClientes();
+}
+
+function verCliente(index) {
+  var clientes = getClientes();
+  var cliente = clientes[index];
+  var config = getConfig();
+  var urlBase = config.urlBase || 'https://meus-pwa.pages.dev';
+  var link = urlBase + '?api=' + encodeURIComponent(cliente.apiUrl);
+  
+  var html = '';
+  html += '<div class="form-group"><label class="form-label">Nome</label><div><strong>' + cliente.nome + '</strong></div></div>';
+  html += '<div class="form-group"><label class="form-label">Email</label><div>' + (cliente.email || '-') + '</div></div>';
+  html += '<div class="form-group"><label class="form-label">Criado em</label><div>' + formatarData(cliente.criadoEm) + '</div></div>';
+  html += '<div class="form-group"><label class="form-label">URL da API</label><div class="link-box" style="font-size:10px">' + cliente.apiUrl + '</div></div>';
+  html += '<div class="form-group"><label class="form-label">Link do Cliente</label><div class="link-box success">' + link + '</div><button class="copy-btn" onclick="copiarTexto(\'' + link + '\')">📋 Copiar</button></div>';
+  if (cliente.observacoes) {
+    html += '<div class="form-group"><label class="form-label">Observações</label><div>' + cliente.observacoes + '</div></div>';
+  }
+  
+  document.getElementById('modalClienteBody').innerHTML = html;
+  document.getElementById('modalCliente').classList.add('show');
+}
+
+function fecharModal() {
+  document.getElementById('modalCliente').classList.remove('show');
+}
+
+function copiarLinkCliente(index) {
+  var clientes = getClientes();
+  var cliente = clientes[index];
+  var config = getConfig();
+  var urlBase = config.urlBase || 'https://meus-pwa.pages.dev';
+  var link = urlBase + '?api=' + encodeURIComponent(cliente.apiUrl);
+  
+  copiarTexto(link);
+  alert('Link copiado!');
+}
+
+function excluirCliente(index) {
+  if (!confirm('Excluir este cliente?')) return;
+  
+  var clientes = getClientes();
+  clientes.splice(index, 1);
+  saveClientes(clientes);
+  
+  renderClientes();
+}
+
+function copiarLink() {
+  var link = document.getElementById('linkCliente').textContent;
+  copiarTexto(link);
+  
+  var btn = document.querySelector('#linkGerado .copy-btn');
+  btn.textContent = '✅ Copiado!';
+  btn.classList.add('copied');
+  setTimeout(function() {
+    btn.textContent = '📋 Copiar Link';
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+function copiarTexto(texto) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(texto);
+  } else {
+    var input = document.createElement('input');
+    input.value = texto;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+  }
+}
+
+// ========== CONFIGURAÇÕES ==========
+function carregarConfiguracoes() {
+  var config = getConfig();
+  document.getElementById('configUrlBase').value = config.urlBase || '';
+  document.getElementById('urlBasePwa').value = config.urlBase || '';
+  document.getElementById('configPlanilhaModelo').value = config.planilhaModelo || '';
+}
+
+function salvarConfiguracoes() {
+  var config = {
+    urlBase: document.getElementById('configUrlBase').value.trim(),
+    planilhaModelo: document.getElementById('configPlanilhaModelo').value.trim()
+  };
+  saveConfig(config);
+  alert('Configurações salvas!');
+}
+
+function salvarUrlBase() {
+  var url = document.getElementById('urlBasePwa').value.trim();
+  var config = getConfig();
+  config.urlBase = url;
+  saveConfig(config);
+  document.getElementById('configUrlBase').value = url;
+  alert('URL Base salva!');
+}
+
+function exportarDados() {
+  var dados = {
+    clientes: getClientes(),
+    config: getConfig(),
+    exportadoEm: new Date().toISOString()
+  };
+  
+  var blob = new Blob([JSON.stringify(dados, null, 2)], {type: 'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'meus_admin_backup_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+}
+
+function importarDados() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var dados = JSON.parse(e.target.result);
+        if (dados.clientes) saveClientes(dados.clientes);
+        if (dados.config) saveConfig(dados.config);
+        alert('Dados importados com sucesso!');
+        location.reload();
+      } catch(err) {
+        alert('Erro ao importar: arquivo inválido');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function limparDados() {
+  if (!confirm('ATENÇÃO: Isso irá apagar TODOS os dados de clientes. Continuar?')) return;
+  if (!confirm('Tem certeza? Esta ação não pode ser desfeita!')) return;
+  
+  localStorage.removeItem(DB_KEY);
+  localStorage.removeItem(CONFIG_KEY);
+  location.reload();
+}
+
+// ========== UTILS ==========
+function formatarData(dataStr) {
+  if (!dataStr) return '-';
+  var d = new Date(dataStr);
+  return d.toLocaleDateString('pt-BR');
+}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded', function() {
+  renderClientes();
+  carregarConfiguracoes();
+});
+</script>
+</body>
+</html>
