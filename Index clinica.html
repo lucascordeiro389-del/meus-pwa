@@ -1,0 +1,572 @@
+/**
+ * SISTEMA CONTROLE - CLÍNICA/STUDIO
+ * Versão personalizada para Pilates + Fisioterapia + Gatos
+ */
+
+function doGet(e) {
+  var action = e.parameter.action || 'getDashboardData';
+  var result;
+  try {
+    switch(action) {
+      case 'getDashboardData': result = getDashboardData(); break;
+      default: result = { error: 'Ação desconhecida' };
+    }
+  } catch(err) {
+    result = { error: err.toString() };
+  }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var action = e.parameter.action || '';
+  var data = {};
+  try { if (e.parameter.data) data = JSON.parse(e.parameter.data); } catch(err) { return jsonResponse({ success: false, message: 'JSON inválido' }); }
+  var result;
+  try {
+    switch(action) {
+      case 'adicionarCliente': result = adicionarCliente(data); break;
+      case 'removerCliente': result = removerCliente(data.nome); break;
+      case 'marcarClientePago': result = marcarClientePago(data.nome, data.pago); break;
+      case 'adicionarContaFixa': result = adicionarContaFixa(data); break;
+      case 'removerContaFixa': result = removerContaFixa(data.nome); break;
+      case 'marcarContaFixaPaga': result = marcarContaFixaPaga(data.nome, data.pago); break;
+      case 'adicionarGato': result = adicionarGato(data); break;
+      case 'removerGato': result = removerGato(data.nome); break;
+      case 'marcarGatoPago': result = marcarGatoPago(data.nome, data.pago); break;
+      case 'adicionarCartao': result = adicionarCartao(data); break;
+      case 'removerCartao': result = removerCartao(data.nome); break;
+      case 'adicionarFinanciamento': result = adicionarFinanciamento(data); break;
+      case 'removerFinanciamento': result = removerFinanciamento(data.nome); break;
+      case 'adicionarLancamento': result = adicionarLancamento(data); break;
+      case 'removerLancamento': result = removerLancamento(data.rowIndex); break;
+      case 'resetarMes': result = resetarMes(); break;
+      default: result = { success: false, message: 'Ação desconhecida: ' + action };
+    }
+  } catch(err) {
+    result = { success: false, message: err.toString() };
+  }
+  return jsonResponse(result);
+}
+
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function setupSistema() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  criarAbaSeNaoExiste(ss, 'Clientes', ['Nome', 'Tipo', 'Dia', 'Valor', 'Pago']);
+  criarAbaSeNaoExiste(ss, 'Contas Fixas', ['Nome', 'Dia', 'Valor', 'Pago']);
+  criarAbaSeNaoExiste(ss, 'Gatos', ['Nome', 'Tipo', 'Valor', 'Pago']);
+  criarAbaSeNaoExiste(ss, 'Cartões', ['Nome', 'Limite', 'Dia Fechamento', 'Dia Vencimento']);
+  criarAbaSeNaoExiste(ss, 'Financiamentos', ['Nome', 'Valor Total', 'Parcelas', 'Parcela Atual', 'Valor Parcela', 'Dia Vencimento', 'Ativo']);
+  criarAbaSeNaoExiste(ss, 'Histórico', ['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor', 'Forma Pagamento', 'Cartão', 'Parcelas', 'Parcela Atual']);
+  return { success: true, message: 'Sistema configurado!' };
+}
+
+function criarAbaSeNaoExiste(ss, nome, headers) {
+  var sheet = ss.getSheetByName(nome);
+  if (!sheet) {
+    sheet = ss.insertSheet(nome);
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function getDashboardData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return {
+    clientes: getClientes(ss),
+    contasFixas: getContasFixas(ss),
+    gatos: getGatos(ss),
+    cartoes: getCartoes(ss),
+    financiamentos: getFinanciamentos(ss),
+    historico: getHistorico(ss),
+    resumo: calcularResumo(ss)
+  };
+}
+
+function normalizar(str) {
+  return String(str || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function parseValor(val) {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  var str = String(val).trim().replace(/R\$\s*/gi, '').trim();
+  if (str.indexOf(',') > -1) str = str.replace(/\./g, '').replace(',', '.');
+  var num = parseFloat(str);
+  return isNaN(num) ? 0 : num;
+}
+
+function formatarDataParaString(data) {
+  if (!data) return '';
+  var d;
+  if (data instanceof Date) d = data;
+  else if (typeof data === 'string') {
+    if (data.includes('/')) { var parts = data.split('/'); d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); }
+    else if (data.includes('-')) { var parts = data.split('-'); d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]) || 1); }
+  }
+  if (!d || isNaN(d.getTime())) return '';
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// ==================== CLIENTES (Pilates + Fisio) ====================
+function getClientes(ss) {
+  var sheet = ss.getSheetByName('Clientes');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 5).getValues();
+  return dados.filter(function(row) { return row[0]; }).map(function(row, i) {
+    return {
+      rowIndex: i + 2,
+      nome: String(row[0] || '').trim(),
+      tipo: String(row[1] || 'Pilates').trim(),
+      dia: parseInt(row[2]) || 1,
+      valor: parseValor(row[3]),
+      pago: row[4] === true || row[4] === 'TRUE' || row[4] === 'Sim'
+    };
+  });
+}
+
+function adicionarCliente(cliente) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Clientes');
+    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Clientes', ['Nome', 'Tipo', 'Dia', 'Valor', 'Pago']);
+    sheet.appendRow([cliente.nome, cliente.tipo || 'Pilates', cliente.dia || 1, cliente.valor, false]);
+    return { success: true, message: 'Cliente adicionado!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function removerCliente(nome) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Clientes');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.deleteRow(i + 2);
+        return { success: true, message: 'Cliente removido!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function marcarClientePago(nome, pago) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Clientes');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.getRange(i + 2, 5).setValue(pago);
+        return { success: true, message: pago ? 'Pago!' : 'Desmarcado!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+// ==================== CONTAS FIXAS ====================
+function getContasFixas(ss) {
+  var sheet = ss.getSheetByName('Contas Fixas');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
+  return dados.filter(function(row) { return row[0]; }).map(function(row, i) {
+    return {
+      rowIndex: i + 2,
+      nome: String(row[0] || '').trim(),
+      dia: parseInt(row[1]) || 1,
+      valor: parseValor(row[2]),
+      pago: row[3] === true || row[3] === 'TRUE' || row[3] === 'Sim'
+    };
+  });
+}
+
+function adicionarContaFixa(conta) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Contas Fixas');
+    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Contas Fixas', ['Nome', 'Dia', 'Valor', 'Pago']);
+    sheet.appendRow([conta.nome, conta.dia || 1, conta.valor, false]);
+    return { success: true, message: 'Conta adicionada!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function removerContaFixa(nome) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Contas Fixas');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.deleteRow(i + 2);
+        return { success: true, message: 'Conta removida!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function marcarContaFixaPaga(nome, pago) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Contas Fixas');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.getRange(i + 2, 4).setValue(pago);
+        return { success: true, message: pago ? 'Pago!' : 'Desmarcado!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+// ==================== GATOS ====================
+function getGatos(ss) {
+  var sheet = ss.getSheetByName('Gatos');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
+  return dados.filter(function(row) { return row[0]; }).map(function(row, i) {
+    return {
+      rowIndex: i + 2,
+      nome: String(row[0] || '').trim(),
+      tipo: String(row[1] || 'Fixo').trim(),
+      valor: parseValor(row[2]),
+      pago: row[3] === true || row[3] === 'TRUE' || row[3] === 'Sim'
+    };
+  });
+}
+
+function adicionarGato(gato) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Gatos');
+    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Gatos', ['Nome', 'Tipo', 'Valor', 'Pago']);
+    sheet.appendRow([gato.nome, gato.tipo || 'Fixo', gato.valor, false]);
+    return { success: true, message: 'Despesa de gato adicionada!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function removerGato(nome) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Gatos');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.deleteRow(i + 2);
+        return { success: true, message: 'Removido!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function marcarGatoPago(nome, pago) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Gatos');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.getRange(i + 2, 4).setValue(pago);
+        return { success: true, message: pago ? 'Pago!' : 'Desmarcado!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+// ==================== CARTÕES ====================
+function getCartoes(ss) {
+  var sheet = ss.getSheetByName('Cartões');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
+  return dados.filter(function(row) { return row[0]; }).map(function(row) {
+    return {
+      nome: String(row[0] || '').trim(),
+      limite: parseValor(row[1]),
+      diaFechamento: parseInt(row[2]) || 1,
+      diaVencimento: parseInt(row[3]) || 10
+    };
+  });
+}
+
+function adicionarCartao(cartao) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Cartões');
+    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Cartões', ['Nome', 'Limite', 'Dia Fechamento', 'Dia Vencimento']);
+    sheet.appendRow([cartao.nome, cartao.limite, cartao.diaFechamento || 1, cartao.diaVencimento || 10]);
+    return { success: true, message: 'Cartão adicionado!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function removerCartao(nome) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Cartões');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.deleteRow(i + 2);
+        return { success: true, message: 'Cartão removido!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+// ==================== FINANCIAMENTOS ====================
+function getFinanciamentos(ss) {
+  var sheet = ss.getSheetByName('Financiamentos');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 7).getValues();
+  return dados.filter(function(row) { return row[0] && row[6] !== false && row[6] !== 'FALSE'; }).map(function(row) {
+    return {
+      nome: String(row[0] || '').trim(),
+      valorTotal: parseValor(row[1]),
+      parcelas: parseInt(row[2]) || 1,
+      parcelaAtual: parseInt(row[3]) || 1,
+      valorParcela: parseValor(row[4]),
+      diaVencimento: parseInt(row[5]) || 1,
+      ativo: row[6] !== false && row[6] !== 'FALSE'
+    };
+  });
+}
+
+function adicionarFinanciamento(fin) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Financiamentos');
+    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Financiamentos', ['Nome', 'Valor Total', 'Parcelas', 'Parcela Atual', 'Valor Parcela', 'Dia Vencimento', 'Ativo']);
+    sheet.appendRow([fin.nome, fin.valorTotal, fin.parcelas, fin.parcelaAtual || 1, fin.valorParcela, fin.diaVencimento || 1, true]);
+    return { success: true, message: 'Financiamento adicionado!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function removerFinanciamento(nome) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Financiamentos');
+    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
+    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    var nomeNorm = normalizar(nome);
+    for (var i = 0; i < dados.length; i++) {
+      if (normalizar(dados[i][0]) === nomeNorm) {
+        sheet.deleteRow(i + 2);
+        return { success: true, message: 'Financiamento removido!' };
+      }
+    }
+    return { success: false, message: 'Não encontrado' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+// ==================== HISTÓRICO ====================
+function getHistorico(ss) {
+  var sheet = ss.getSheetByName('Histórico');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 9).getValues();
+  var resultado = [];
+  for (var i = 0; i < dados.length; i++) {
+    var row = dados[i];
+    if (!row[0]) continue;
+    var dataStr = formatarDataParaString(row[0]);
+    if (!dataStr) continue;
+    resultado.push({
+      rowIndex: i + 2,
+      data: dataStr,
+      tipo: String(row[1] || '').trim(),
+      categoria: String(row[2] || '').trim(),
+      descricao: String(row[3] || '').trim(),
+      valor: parseValor(row[4]),
+      formaPagamento: String(row[5] || '').trim(),
+      cartao: String(row[6] || '').trim(),
+      parcelas: parseInt(row[7]) || 1,
+      parcelaAtual: parseInt(row[8]) || 1
+    });
+  }
+  return resultado;
+}
+
+function adicionarLancamento(lancamento) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Histórico');
+    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Histórico', ['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor', 'Forma Pagamento', 'Cartão', 'Parcelas', 'Parcela Atual']);
+    var dataFormatada = lancamento.data;
+    if (lancamento.data && lancamento.data.includes('-')) {
+      var parts = lancamento.data.split('-');
+      dataFormatada = new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    sheet.appendRow([
+      dataFormatada,
+      lancamento.tipo,
+      lancamento.categoria,
+      lancamento.descricao || '',
+      lancamento.valor,
+      lancamento.formaPagamento || '',
+      lancamento.cartao || '',
+      lancamento.parcelas || 1,
+      lancamento.parcelaAtual || 1
+    ]);
+    return { success: true, message: 'Lançamento adicionado!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+function removerLancamento(rowIndex) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Histórico');
+    if (!sheet || !rowIndex || rowIndex < 2 || rowIndex > sheet.getLastRow()) {
+      return { success: false, message: 'Lançamento não encontrado' };
+    }
+    sheet.deleteRow(rowIndex);
+    return { success: true, message: 'Lançamento removido!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
+
+// ==================== RESUMO ====================
+function calcularResumo(ss) {
+  var clientes = getClientes(ss);
+  var contasFixas = getContasFixas(ss);
+  var gatos = getGatos(ss);
+  var financiamentos = getFinanciamentos(ss);
+  
+  var totalEntradas = 0;
+  var totalRecebido = 0;
+  var totalSaidas = 0;
+  var totalPago = 0;
+  
+  // Entradas = Clientes
+  clientes.forEach(function(c) {
+    totalEntradas += c.valor;
+    if (c.pago) totalRecebido += c.valor;
+  });
+  
+  // Saídas = Contas Fixas + Gatos + Financiamentos
+  contasFixas.forEach(function(c) {
+    totalSaidas += c.valor;
+    if (c.pago) totalPago += c.valor;
+  });
+  
+  gatos.forEach(function(g) {
+    totalSaidas += g.valor;
+    if (g.pago) totalPago += g.valor;
+  });
+  
+  financiamentos.forEach(function(f) {
+    totalSaidas += f.valorParcela;
+  });
+  
+  return {
+    totalEntradas: totalEntradas,
+    totalRecebido: totalRecebido,
+    aReceber: totalEntradas - totalRecebido,
+    totalSaidas: totalSaidas,
+    totalPago: totalPago,
+    aPagar: totalSaidas - totalPago
+  };
+}
+
+// ==================== RESETAR MÊS ====================
+function resetarMes() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Resetar Clientes
+    var clientesSheet = ss.getSheetByName('Clientes');
+    if (clientesSheet && clientesSheet.getLastRow() >= 2) {
+      var range = clientesSheet.getRange(2, 5, clientesSheet.getLastRow() - 1, 1);
+      var valores = range.getValues().map(function() { return [false]; });
+      range.setValues(valores);
+    }
+    
+    // Resetar Contas Fixas
+    var contasSheet = ss.getSheetByName('Contas Fixas');
+    if (contasSheet && contasSheet.getLastRow() >= 2) {
+      var range = contasSheet.getRange(2, 4, contasSheet.getLastRow() - 1, 1);
+      var valores = range.getValues().map(function() { return [false]; });
+      range.setValues(valores);
+    }
+    
+    // Resetar Gatos (apenas fixos, variáveis são removidos)
+    var gatosSheet = ss.getSheetByName('Gatos');
+    if (gatosSheet && gatosSheet.getLastRow() >= 2) {
+      var dados = gatosSheet.getRange(2, 1, gatosSheet.getLastRow() - 1, 4).getValues();
+      for (var i = dados.length - 1; i >= 0; i--) {
+        if (normalizar(dados[i][1]) === 'variavel' || normalizar(dados[i][1]) === 'variável') {
+          gatosSheet.deleteRow(i + 2);
+        } else {
+          gatosSheet.getRange(i + 2, 4).setValue(false);
+        }
+      }
+    }
+    
+    // Atualizar parcela atual dos financiamentos
+    var finSheet = ss.getSheetByName('Financiamentos');
+    if (finSheet && finSheet.getLastRow() >= 2) {
+      var dados = finSheet.getRange(2, 1, finSheet.getLastRow() - 1, 7).getValues();
+      for (var i = 0; i < dados.length; i++) {
+        var parcelaAtual = parseInt(dados[i][3]) || 1;
+        var totalParcelas = parseInt(dados[i][2]) || 1;
+        var novaParcelaAtual = parcelaAtual + 1;
+        finSheet.getRange(i + 2, 4).setValue(novaParcelaAtual);
+        if (novaParcelaAtual > totalParcelas) {
+          finSheet.getRange(i + 2, 7).setValue(false);
+        }
+      }
+    }
+    
+    return { success: true, message: 'Mês resetado com sucesso!' };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}
