@@ -1,572 +1,179 @@
-/**
- * SISTEMA CONTROLE - CLÍNICA/STUDIO
- * Versão personalizada para Pilates + Fisioterapia + Gatos
- */
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Controle">
+  <meta name="theme-color" content="#7C3AED">
+  <title>Controle Financeiro</title>
+  <style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--primary:#7C3AED;--primary-dark:#5B21B6;--secondary:#A78BFA;--background:#F5F3FF;--card-bg:#FFFFFF;--success:#10B981;--success-light:#D1FAE5;--danger:#EF4444;--danger-light:#FEE2E2;--warning:#F59E0B;--warning-light:#FEF3C7;--info:#3B82F6;--info-light:#DBEAFE;--text-dark:#1F2937;--text-medium:#6B7280;--text-light:#9CA3AF;--border:#E5E7EB;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--background);color:var(--text-dark);font-size:14px}
+.setup-screen{position:fixed;inset:0;background:linear-gradient(145deg,#7C3AED,#5B21B6);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:10001;padding:20px}.setup-screen.hide{display:none}.setup-logo{font-size:60px;margin-bottom:16px}.setup-title{color:#fff;font-size:24px;font-weight:700}.setup-sub{color:rgba(255,255,255,.7);font-size:14px;margin:8px 0 32px}.setup-box{background:rgba(255,255,255,.1);border-radius:16px;padding:24px;width:100%;max-width:400px}.setup-label{color:rgba(255,255,255,.9);font-size:12px;font-weight:600;margin-bottom:8px;display:block}.setup-input{width:100%;padding:14px;border:2px solid rgba(255,255,255,.2);border-radius:10px;font-size:14px;background:rgba(255,255,255,.1);color:#fff;margin-bottom:16px}.setup-input::placeholder{color:rgba(255,255,255,.4)}.setup-btn{width:100%;padding:16px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;background:#fff;color:#7C3AED}.setup-btn:disabled{opacity:.5}.setup-help{color:rgba(255,255,255,.6);font-size:11px;text-align:center;margin-top:12px}.setup-error,.setup-success{padding:12px;border-radius:8px;margin-bottom:16px;font-size:12px;display:none}.setup-error{background:rgba(255,0,0,.2);color:#fff}.setup-success{background:rgba(0,255,0,.2);color:#fff}.setup-error.show,.setup-success.show{display:block}
+.splash{position:fixed;inset:0;background:linear-gradient(145deg,#7C3AED,#5B21B6);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:10000;transition:opacity .3s}.splash.hide{opacity:0;pointer-events:none}.splash-logo{font-size:50px;margin-bottom:12px}.splash-title{color:#fff;font-size:22px;font-weight:700}.splash-spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-top:20px}@keyframes spin{to{transform:rotate(360deg)}}
+.app{display:flex;flex-direction:column;height:100vh;padding-top:var(--safe-top)}.app.hide{display:none}
+.header{background:var(--primary);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}.logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:18px;font-weight:700}.header-right{display:flex;gap:8px}.header-btn{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;cursor:pointer}
+.main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+.container{padding:12px}
+.resumo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.resumo-card{background:var(--card-bg);border-radius:12px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}.resumo-card.green{border-left:4px solid var(--success)}.resumo-card.red{border-left:4px solid var(--danger)}.resumo-card.blue{border-left:4px solid var(--info)}.resumo-card.orange{border-left:4px solid var(--warning)}
+.resumo-label{font-size:11px;color:var(--text-light);text-transform:uppercase;font-weight:600;margin-bottom:4px}
+.resumo-value{font-size:18px;font-weight:700}.resumo-value.green{color:var(--success)}.resumo-value.red{color:var(--danger)}.resumo-value.blue{color:var(--info)}.resumo-value.orange{color:var(--warning)}
+.section{background:var(--card-bg);border-radius:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden}
+.section-header{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid var(--border)}
+.section-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.section-badge{background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.section-arrow{font-size:12px;color:var(--text-light);transition:transform .2s}
+.section.closed .section-arrow{transform:rotate(-90deg)}
+.section.closed .section-body{display:none}
+.section-body{padding:10px}
+.section-actions{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
+.item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--background);border-radius:8px;margin-bottom:6px}
+.item.pago{opacity:.5}
+.item-check{width:20px;height:20px;accent-color:var(--success);cursor:pointer}
+.item-info{flex:1;min-width:0}
+.item-nome{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item.pago .item-nome{text-decoration:line-through}
+.item-detalhe{font-size:11px;color:var(--text-light);margin-top:2px}
+.item-valor{font-size:14px;font-weight:600}
+.item-valor.green{color:var(--success)}
+.item-valor.red{color:var(--danger)}
+.item-del{background:none;border:none;font-size:14px;opacity:.3;cursor:pointer;padding:4px}
+.item-tipo{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;margin-left:6px}
+.item-tipo.pilates{background:#E0E7FF;color:#4338CA}
+.item-tipo.fisio{background:#FEE2E2;color:#DC2626}
+.item-tipo.fixo{background:#DBEAFE;color:#2563EB}
+.item-tipo.variavel{background:#FEF3C7;color:#D97706}
+.cartoes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cartao-box{background:var(--background);border-radius:10px;padding:10px;text-align:center;position:relative}
+.cartao-nome{font-size:11px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cartao-fat{font-size:13px;color:var(--danger);font-weight:700}
+.cartao-disp{font-size:10px;color:var(--success);margin-top:4px}
+.cartao-del{position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:none}.cartao-box:hover .cartao-del{display:flex;align-items:center;justify-content:center}
+.fin-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.fin-box{background:var(--background);border-radius:10px;padding:12px;position:relative;border-left:3px solid var(--warning)}
+.fin-nome{font-size:13px;font-weight:600;margin-bottom:4px}
+.fin-info{display:flex;justify-content:space-between;align-items:center}
+.fin-parcela{font-size:11px;color:var(--text-medium)}
+.fin-valor{font-size:14px;font-weight:700;color:var(--warning)}
+.fin-progress{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.fin-progress-bar{height:100%;background:var(--warning);border-radius:2px}
+.fin-del{position:absolute;top:6px;right:6px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:none}.fin-box:hover .fin-del{display:flex;align-items:center;justify-content:center}
+.empty{text-align:center;padding:20px;color:var(--text-light)}
+.empty-icon{font-size:28px;margin-bottom:8px;opacity:.5}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card-bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + var(--safe-bottom))}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;color:var(--text-light);font-size:10px;font-weight:500;padding:4px 16px;cursor:pointer}
+.nav-btn.active{color:var(--primary)}
+.nav-btn .ico{font-size:22px}
+.tab{display:none}
+.tab.active{display:block}
+.form-box{background:var(--card-bg);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.form-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-group{margin-bottom:10px}
+.form-label{display:block;font-size:11px;font-weight:500;color:var(--text-medium);margin-bottom:4px}
+.form-input,.form-select{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card-bg);color:var(--text-dark)}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--primary)}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:var(--primary);color:#fff}
+.btn:disabled{opacity:.5}
+.btn-secondary{background:var(--border);color:var(--text-dark)}
+.btn-danger{background:var(--danger)}
+.btn-sm{padding:8px 12px;font-size:12px;width:auto}
+.toast-wrap{position:fixed;top:70px;left:12px;right:12px;z-index:9000;pointer-events:none}
+.toast{background:var(--text-dark);color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:8px;font-size:13px;font-weight:500;animation:fadeIn .3s}
+.toast.ok{background:var(--success)}
+.toast.err{background:var(--danger)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:flex-end;z-index:1000}.modal-overlay.show{display:flex}
+.modal{background:var(--card-bg);border-radius:16px 16px 0 0;width:100%;max-height:80vh;overflow-y:auto;padding:20px;padding-bottom:calc(20px + var(--safe-bottom))}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:24px;color:var(--text-light);cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="setup-screen" id="setupScreen"><div class="setup-logo">💼</div><div class="setup-title">Controle</div><div class="setup-sub">Configure sua conexão</div><div class="setup-box"><div class="setup-error" id="setupError"></div><div class="setup-success" id="setupSuccess"></div><label class="setup-label">URL da API</label><input type="text" class="setup-input" id="setupApiUrl" placeholder="https://script.google.com/macros/s/..."><button class="setup-btn" onclick="testarConexao()">Conectar</button><p class="setup-help">Não tem a URL? Peça ao administrador.</p></div></div>
+  <div class="splash hide" id="splash"><div class="splash-logo">💼</div><div class="splash-title">Carregando...</div><div class="splash-spin"></div></div>
+  <div class="app hide" id="appMain">
+    <header class="header"><div class="logo"><span>💼</span><span>Controle</span></div><div class="header-right"><button class="header-btn" onclick="resetarMes()">🔄 Novo Mês</button><button class="header-btn" onclick="abrirConfig()">⚙️</button></div></header>
+    <div class="toast-wrap" id="toastWrap"></div>
+    <main class="main">
+      <section class="tab active" id="tab-home"><div class="container">
+        <div class="resumo-grid">
+          <div class="resumo-card green"><div class="resumo-label">Entradas</div><div class="resumo-value green" id="vEntradas">R$ 0</div></div>
+          <div class="resumo-card red"><div class="resumo-label">Saídas</div><div class="resumo-value red" id="vSaidas">R$ 0</div></div>
+          <div class="resumo-card blue"><div class="resumo-label">A Receber</div><div class="resumo-value blue" id="vAReceber">R$ 0</div></div>
+          <div class="resumo-card orange"><div class="resumo-label">A Pagar</div><div class="resumo-value orange" id="vAPagar">R$ 0</div></div>
+        </div>
+        <div class="section" id="secClientes"><div class="section-header" onclick="toggleSection('secClientes')"><div class="section-title">💪 Clientes <span class="section-badge" id="badgeClientes">0</span></div><span class="section-arrow">▼</span></div><div class="section-body" id="listaClientes"></div></div>
+        <div class="section" id="secContas"><div class="section-header" onclick="toggleSection('secContas')"><div class="section-title">📋 Contas Fixas <span class="section-badge" id="badgeContas">0</span></div><span class="section-arrow">▼</span></div><div class="section-body" id="listaContas"></div></div>
+        <div class="section" id="secGatos"><div class="section-header" onclick="toggleSection('secGatos')"><div class="section-title">🐱 Gatos <span class="section-badge" id="badgeGatos">0</span></div><span class="section-arrow">▼</span></div><div class="section-body" id="listaGatos"></div></div>
+        <div class="section" id="secCartoes"><div class="section-header" onclick="toggleSection('secCartoes')"><div class="section-title">💳 Cartões</div><span class="section-arrow">▼</span></div><div class="section-body"><div class="cartoes-grid" id="listaCartoes"></div></div></div>
+        <div class="section" id="secFin"><div class="section-header" onclick="toggleSection('secFin')"><div class="section-title">🏦 Financiamentos</div><span class="section-arrow">▼</span></div><div class="section-body"><div class="fin-grid" id="listaFin"></div></div></div>
+      </div></section>
+      <section class="tab" id="tab-add"><div class="container">
+        <div class="form-box"><div class="form-title">💪 Novo Cliente</div><form onsubmit="salvarCliente(event)"><div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cliNome" required></div><div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="cliTipo"><option value="Pilates">Pilates</option><option value="Fisioterapia">Fisioterapia</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">Dia Pagamento</label><input type="number" class="form-input" id="cliDia" min="1" max="31" value="1" required></div><div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="cliValor" step="0.01" required></div></div><button type="submit" class="btn">Adicionar Cliente</button></form></div>
+        <div class="form-box"><div class="form-title">📋 Nova Conta Fixa</div><form onsubmit="salvarConta(event)"><div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="contaNome" required></div><div class="form-group"><label class="form-label">Dia</label><input type="number" class="form-input" id="contaDia" min="1" max="31" required></div></div><div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="contaValor" step="0.01" required></div><button type="submit" class="btn">Adicionar Conta</button></form></div>
+        <div class="form-box"><div class="form-title">🐱 Despesa Gatos</div><form onsubmit="salvarGato(event)"><div class="form-row"><div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="gatoNome" required></div><div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="gatoTipo"><option value="Fixo">Fixo (mensal)</option><option value="Variável">Variável (único)</option></select></div></div><div class="form-group"><label class="form-label">Valor</label><input type="number" class="form-input" id="gatoValor" step="0.01" required></div><button type="submit" class="btn">Adicionar</button></form></div>
+        <div class="form-box"><div class="form-title">💳 Novo Cartão</div><form onsubmit="salvarCartao(event)"><div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="cartNome" required></div><div class="form-group"><label class="form-label">Limite</label><input type="number" class="form-input" id="cartLimite" step="0.01" required></div></div><div class="form-row"><div class="form-group"><label class="form-label">Fechamento</label><input type="number" class="form-input" id="cartFech" min="1" max="31" value="1"></div><div class="form-group"><label class="form-label">Vencimento</label><input type="number" class="form-input" id="cartVenc" min="1" max="31" value="10"></div></div><button type="submit" class="btn">Adicionar Cartão</button></form></div>
+        <div class="form-box"><div class="form-title">🏦 Novo Financiamento</div><form onsubmit="salvarFin(event)"><div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="finNome" required></div><div class="form-group"><label class="form-label">Valor Total</label><input type="number" class="form-input" id="finTotal" step="0.01" required></div></div><div class="form-row"><div class="form-group"><label class="form-label">Parcelas</label><input type="number" class="form-input" id="finParcelas" min="1" required></div><div class="form-group"><label class="form-label">Parcela Atual</label><input type="number" class="form-input" id="finAtual" min="1" value="1"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Valor Parcela</label><input type="number" class="form-input" id="finValor" step="0.01" required></div><div class="form-group"><label class="form-label">Dia Venc.</label><input type="number" class="form-input" id="finDia" min="1" max="31" required></div></div><button type="submit" class="btn">Adicionar</button></form></div>
+      </div></section>
+    </main>
+    <nav class="nav"><button class="nav-btn active" onclick="switchTab('tab-home')"><span class="ico">📊</span><span>Resumo</span></button><button class="nav-btn" onclick="switchTab('tab-add')"><span class="ico">➕</span><span>Adicionar</span></button></nav>
+  </div>
+<script>
+var API_URL='',data={clientes:[],contasFixas:[],gatos:[],cartoes:[],financiamentos:[],historico:[],resumo:{}};
 
-function doGet(e) {
-  var action = e.parameter.action || 'getDashboardData';
-  var result;
-  try {
-    switch(action) {
-      case 'getDashboardData': result = getDashboardData(); break;
-      default: result = { error: 'Ação desconhecida' };
-    }
-  } catch(err) {
-    result = { error: err.toString() };
-  }
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
+function checkConfig(){var p=new URLSearchParams(window.location.search),a=p.get('api');if(a){API_URL=a;localStorage.setItem('clinica_api_url',a);iniciarApp();return}var s=localStorage.getItem('clinica_api_url');if(s){API_URL=s;iniciarApp();return}document.getElementById('setupScreen').classList.remove('hide')}
+async function testarConexao(){var u=document.getElementById('setupApiUrl').value.trim(),btn=document.querySelector('.setup-btn'),err=document.getElementById('setupError'),suc=document.getElementById('setupSuccess');err.classList.remove('show');suc.classList.remove('show');if(!u||!u.includes('script.google.com')){err.textContent='URL inválida';err.classList.add('show');return}btn.disabled=true;btn.textContent='Conectando...';try{var r=await fetch(u+'?action=getDashboardData');var j=await r.json();if(j.error)throw new Error(j.error);suc.textContent='✓ Conectado!';suc.classList.add('show');API_URL=u;localStorage.setItem('clinica_api_url',u);setTimeout(function(){document.getElementById('setupScreen').classList.add('hide');iniciarApp()},800)}catch(e){err.textContent='Erro: '+e.message;err.classList.add('show');btn.disabled=false;btn.textContent='Conectar'}}
+function iniciarApp(){document.getElementById('setupScreen').classList.add('hide');document.getElementById('splash').classList.remove('hide');document.getElementById('appMain').classList.remove('hide');carregarDados()}
+function abrirConfig(){if(confirm('Reconfigurar?')){localStorage.removeItem('clinica_api_url');location.reload()}}
+document.addEventListener('DOMContentLoaded',checkConfig);
 
-function doPost(e) {
-  var action = e.parameter.action || '';
-  var data = {};
-  try { if (e.parameter.data) data = JSON.parse(e.parameter.data); } catch(err) { return jsonResponse({ success: false, message: 'JSON inválido' }); }
-  var result;
-  try {
-    switch(action) {
-      case 'adicionarCliente': result = adicionarCliente(data); break;
-      case 'removerCliente': result = removerCliente(data.nome); break;
-      case 'marcarClientePago': result = marcarClientePago(data.nome, data.pago); break;
-      case 'adicionarContaFixa': result = adicionarContaFixa(data); break;
-      case 'removerContaFixa': result = removerContaFixa(data.nome); break;
-      case 'marcarContaFixaPaga': result = marcarContaFixaPaga(data.nome, data.pago); break;
-      case 'adicionarGato': result = adicionarGato(data); break;
-      case 'removerGato': result = removerGato(data.nome); break;
-      case 'marcarGatoPago': result = marcarGatoPago(data.nome, data.pago); break;
-      case 'adicionarCartao': result = adicionarCartao(data); break;
-      case 'removerCartao': result = removerCartao(data.nome); break;
-      case 'adicionarFinanciamento': result = adicionarFinanciamento(data); break;
-      case 'removerFinanciamento': result = removerFinanciamento(data.nome); break;
-      case 'adicionarLancamento': result = adicionarLancamento(data); break;
-      case 'removerLancamento': result = removerLancamento(data.rowIndex); break;
-      case 'resetarMes': result = resetarMes(); break;
-      default: result = { success: false, message: 'Ação desconhecida: ' + action };
-    }
-  } catch(err) {
-    result = { success: false, message: err.toString() };
-  }
-  return jsonResponse(result);
-}
+async function apiPost(a,d){try{return await(await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action='+a+'&data='+encodeURIComponent(JSON.stringify(d))})).json()}catch(e){return{success:false,message:'Erro'}}}
+async function carregarDados(){try{var r=await fetch(API_URL+'?action=getDashboardData');data=await r.json();atualizarTudo()}catch(e){}document.getElementById('splash').classList.add('hide')}
+function atualizarTudo(){atualizarResumo();atualizarClientes();atualizarContas();atualizarGatos();atualizarCartoes();atualizarFin()}
 
-function jsonResponse(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
-}
+function fmtMoeda(v){return'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtCurto(v){if(Math.abs(v)>=1000)return'R$'+(v/1000).toFixed(1)+'k';return'R$'+(v||0).toFixed(0)}
 
-function setupSistema() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  criarAbaSeNaoExiste(ss, 'Clientes', ['Nome', 'Tipo', 'Dia', 'Valor', 'Pago']);
-  criarAbaSeNaoExiste(ss, 'Contas Fixas', ['Nome', 'Dia', 'Valor', 'Pago']);
-  criarAbaSeNaoExiste(ss, 'Gatos', ['Nome', 'Tipo', 'Valor', 'Pago']);
-  criarAbaSeNaoExiste(ss, 'Cartões', ['Nome', 'Limite', 'Dia Fechamento', 'Dia Vencimento']);
-  criarAbaSeNaoExiste(ss, 'Financiamentos', ['Nome', 'Valor Total', 'Parcelas', 'Parcela Atual', 'Valor Parcela', 'Dia Vencimento', 'Ativo']);
-  criarAbaSeNaoExiste(ss, 'Histórico', ['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor', 'Forma Pagamento', 'Cartão', 'Parcelas', 'Parcela Atual']);
-  return { success: true, message: 'Sistema configurado!' };
-}
+function atualizarResumo(){var r=data.resumo||{};document.getElementById('vEntradas').textContent=fmtMoeda(r.totalEntradas);document.getElementById('vSaidas').textContent=fmtMoeda(r.totalSaidas);document.getElementById('vAReceber').textContent=fmtMoeda(r.aReceber);document.getElementById('vAPagar').textContent=fmtMoeda(r.aPagar)}
 
-function criarAbaSeNaoExiste(ss, nome, headers) {
-  var sheet = ss.getSheetByName(nome);
-  if (!sheet) {
-    sheet = ss.insertSheet(nome);
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
-    sheet.setFrozenRows(1);
-  }
-  return sheet;
-}
+function atualizarClientes(){var c=document.getElementById('listaClientes'),list=data.clientes||[],pend=list.filter(function(x){return!x.pago});document.getElementById('badgeClientes').textContent=pend.length+'/'+list.length;if(!list.length){c.innerHTML='<div class="empty"><div class="empty-icon">💪</div><p>Nenhum cliente</p></div>';return}var html='';list.sort(function(a,b){return a.dia-b.dia}).forEach(function(cli){var tipoClass=cli.tipo.toLowerCase()==='pilates'?'pilates':'fisio';html+='<div class="item '+(cli.pago?'pago':'')+'"><input type="checkbox" class="item-check" '+(cli.pago?'checked':'')+' onchange="toggleCliente(\''+cli.nome.replace(/'/g,"\\'")+'\',this.checked)"><div class="item-info"><div class="item-nome">'+cli.nome+'<span class="item-tipo '+tipoClass+'">'+cli.tipo+'</span></div><div class="item-detalhe">Dia '+cli.dia+'</div></div><div class="item-valor green">'+fmtMoeda(cli.valor)+'</div><button class="item-del" onclick="excluirCliente(\''+cli.nome.replace(/'/g,"\\'")+'\')">🗑️</button></div>'});c.innerHTML=html}
 
-function getDashboardData() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  return {
-    clientes: getClientes(ss),
-    contasFixas: getContasFixas(ss),
-    gatos: getGatos(ss),
-    cartoes: getCartoes(ss),
-    financiamentos: getFinanciamentos(ss),
-    historico: getHistorico(ss),
-    resumo: calcularResumo(ss)
-  };
-}
+function atualizarContas(){var c=document.getElementById('listaContas'),list=data.contasFixas||[],pend=list.filter(function(x){return!x.pago});document.getElementById('badgeContas').textContent=pend.length+'/'+list.length;if(!list.length){c.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Nenhuma conta</p></div>';return}var html='';list.sort(function(a,b){return a.dia-b.dia}).forEach(function(conta){html+='<div class="item '+(conta.pago?'pago':'')+'"><input type="checkbox" class="item-check" '+(conta.pago?'checked':'')+' onchange="toggleConta(\''+conta.nome.replace(/'/g,"\\'")+'\',this.checked)"><div class="item-info"><div class="item-nome">'+conta.nome+'</div><div class="item-detalhe">Dia '+conta.dia+'</div></div><div class="item-valor red">'+fmtMoeda(conta.valor)+'</div><button class="item-del" onclick="excluirConta(\''+conta.nome.replace(/'/g,"\\'")+'\')">🗑️</button></div>'});c.innerHTML=html}
 
-function normalizar(str) {
-  return String(str || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
+function atualizarGatos(){var c=document.getElementById('listaGatos'),list=data.gatos||[],pend=list.filter(function(x){return!x.pago});document.getElementById('badgeGatos').textContent=pend.length+'/'+list.length;if(!list.length){c.innerHTML='<div class="empty"><div class="empty-icon">🐱</div><p>Nenhuma despesa</p></div>';return}var html='';list.forEach(function(g){var tipoClass=g.tipo.toLowerCase()==='fixo'?'fixo':'variavel';html+='<div class="item '+(g.pago?'pago':'')+'"><input type="checkbox" class="item-check" '+(g.pago?'checked':'')+' onchange="toggleGato(\''+g.nome.replace(/'/g,"\\'")+'\',this.checked)"><div class="item-info"><div class="item-nome">'+g.nome+'<span class="item-tipo '+tipoClass+'">'+g.tipo+'</span></div></div><div class="item-valor red">'+fmtMoeda(g.valor)+'</div><button class="item-del" onclick="excluirGato(\''+g.nome.replace(/'/g,"\\'")+'\')">🗑️</button></div>'});c.innerHTML=html}
 
-function parseValor(val) {
-  if (typeof val === 'number') return val;
-  if (!val) return 0;
-  var str = String(val).trim().replace(/R\$\s*/gi, '').trim();
-  if (str.indexOf(',') > -1) str = str.replace(/\./g, '').replace(',', '.');
-  var num = parseFloat(str);
-  return isNaN(num) ? 0 : num;
-}
+function atualizarCartoes(){var c=document.getElementById('listaCartoes'),list=data.cartoes||[];if(!list.length){c.innerHTML='<div class="empty" style="grid-column:span 3"><div class="empty-icon">💳</div><p>Nenhum cartão</p></div>';return}var html='';list.forEach(function(cart){html+='<div class="cartao-box"><button class="cartao-del" onclick="excluirCartao(\''+cart.nome.replace(/'/g,"\\'")+'\')">×</button><div class="cartao-nome">'+cart.nome+'</div><div class="cartao-fat">'+fmtMoeda(0)+'</div><div class="cartao-disp">Lim: '+fmtCurto(cart.limite)+'</div></div>'});c.innerHTML=html}
 
-function formatarDataParaString(data) {
-  if (!data) return '';
-  var d;
-  if (data instanceof Date) d = data;
-  else if (typeof data === 'string') {
-    if (data.includes('/')) { var parts = data.split('/'); d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); }
-    else if (data.includes('-')) { var parts = data.split('-'); d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]) || 1); }
-  }
-  if (!d || isNaN(d.getTime())) return '';
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
+function atualizarFin(){var c=document.getElementById('listaFin'),list=data.financiamentos||[];if(!list.length){c.innerHTML='<div class="empty"><div class="empty-icon">🏦</div><p>Nenhum financiamento</p></div>';return}var html='';list.forEach(function(f){var pct=(f.parcelaAtual-1)/f.parcelas*100;html+='<div class="fin-box"><button class="fin-del" onclick="excluirFin(\''+f.nome.replace(/'/g,"\\'")+'\')">×</button><div class="fin-nome">'+f.nome+'</div><div class="fin-info"><span class="fin-parcela">'+f.parcelaAtual+'/'+f.parcelas+' - Dia '+f.diaVencimento+'</span><span class="fin-valor">'+fmtMoeda(f.valorParcela)+'</span></div><div class="fin-progress"><div class="fin-progress-bar" style="width:'+pct+'%"></div></div></div>'});c.innerHTML=html}
 
-// ==================== CLIENTES (Pilates + Fisio) ====================
-function getClientes(ss) {
-  var sheet = ss.getSheetByName('Clientes');
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 5).getValues();
-  return dados.filter(function(row) { return row[0]; }).map(function(row, i) {
-    return {
-      rowIndex: i + 2,
-      nome: String(row[0] || '').trim(),
-      tipo: String(row[1] || 'Pilates').trim(),
-      dia: parseInt(row[2]) || 1,
-      valor: parseValor(row[3]),
-      pago: row[4] === true || row[4] === 'TRUE' || row[4] === 'Sim'
-    };
-  });
-}
+function toggleSection(id){document.getElementById(id).classList.toggle('closed')}
+function switchTab(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});document.getElementById(id).classList.add('active');event.target.closest('.nav-btn').classList.add('active')}
 
-function adicionarCliente(cliente) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Clientes');
-    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Clientes', ['Nome', 'Tipo', 'Dia', 'Valor', 'Pago']);
-    sheet.appendRow([cliente.nome, cliente.tipo || 'Pilates', cliente.dia || 1, cliente.valor, false]);
-    return { success: true, message: 'Cliente adicionado!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
+async function toggleCliente(nome,pago){var r=await apiPost('marcarClientePago',{nome:nome,pago:pago});if(r.success){toast(pago?'Recebido!':'Desmarcado','ok');carregarDados()}else toast(r.message,'err')}
+async function toggleConta(nome,pago){var r=await apiPost('marcarContaFixaPaga',{nome:nome,pago:pago});if(r.success){toast(pago?'Pago!':'Desmarcado','ok');carregarDados()}else toast(r.message,'err')}
+async function toggleGato(nome,pago){var r=await apiPost('marcarGatoPago',{nome:nome,pago:pago});if(r.success){toast(pago?'Pago!':'Desmarcado','ok');carregarDados()}else toast(r.message,'err')}
 
-function removerCliente(nome) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Clientes');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.deleteRow(i + 2);
-        return { success: true, message: 'Cliente removido!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
+async function excluirCliente(nome){if(!confirm('Excluir '+nome+'?'))return;var r=await apiPost('removerCliente',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message,'err')}
+async function excluirConta(nome){if(!confirm('Excluir '+nome+'?'))return;var r=await apiPost('removerContaFixa',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message,'err')}
+async function excluirGato(nome){if(!confirm('Excluir '+nome+'?'))return;var r=await apiPost('removerGato',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message,'err')}
+async function excluirCartao(nome){if(!confirm('Excluir '+nome+'?'))return;var r=await apiPost('removerCartao',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message,'err')}
+async function excluirFin(nome){if(!confirm('Excluir '+nome+'?'))return;var r=await apiPost('removerFinanciamento',{nome:nome});if(r.success){toast('Excluído!','ok');carregarDados()}else toast(r.message,'err')}
 
-function marcarClientePago(nome, pago) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Clientes');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.getRange(i + 2, 5).setValue(pago);
-        return { success: true, message: pago ? 'Pago!' : 'Desmarcado!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
+async function salvarCliente(e){e.preventDefault();var r=await apiPost('adicionarCliente',{nome:document.getElementById('cliNome').value,tipo:document.getElementById('cliTipo').value,dia:parseInt(document.getElementById('cliDia').value),valor:parseFloat(document.getElementById('cliValor').value)});if(r.success){toast('Adicionado!','ok');e.target.reset();carregarDados()}else toast(r.message,'err')}
+async function salvarConta(e){e.preventDefault();var r=await apiPost('adicionarContaFixa',{nome:document.getElementById('contaNome').value,dia:parseInt(document.getElementById('contaDia').value),valor:parseFloat(document.getElementById('contaValor').value)});if(r.success){toast('Adicionado!','ok');e.target.reset();carregarDados()}else toast(r.message,'err')}
+async function salvarGato(e){e.preventDefault();var r=await apiPost('adicionarGato',{nome:document.getElementById('gatoNome').value,tipo:document.getElementById('gatoTipo').value,valor:parseFloat(document.getElementById('gatoValor').value)});if(r.success){toast('Adicionado!','ok');e.target.reset();carregarDados()}else toast(r.message,'err')}
+async function salvarCartao(e){e.preventDefault();var r=await apiPost('adicionarCartao',{nome:document.getElementById('cartNome').value,limite:parseFloat(document.getElementById('cartLimite').value),diaFechamento:parseInt(document.getElementById('cartFech').value),diaVencimento:parseInt(document.getElementById('cartVenc').value)});if(r.success){toast('Adicionado!','ok');e.target.reset();carregarDados()}else toast(r.message,'err')}
+async function salvarFin(e){e.preventDefault();var r=await apiPost('adicionarFinanciamento',{nome:document.getElementById('finNome').value,valorTotal:parseFloat(document.getElementById('finTotal').value),parcelas:parseInt(document.getElementById('finParcelas').value),parcelaAtual:parseInt(document.getElementById('finAtual').value),valorParcela:parseFloat(document.getElementById('finValor').value),diaVencimento:parseInt(document.getElementById('finDia').value)});if(r.success){toast('Adicionado!','ok');e.target.reset();carregarDados()}else toast(r.message,'err')}
 
-// ==================== CONTAS FIXAS ====================
-function getContasFixas(ss) {
-  var sheet = ss.getSheetByName('Contas Fixas');
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
-  return dados.filter(function(row) { return row[0]; }).map(function(row, i) {
-    return {
-      rowIndex: i + 2,
-      nome: String(row[0] || '').trim(),
-      dia: parseInt(row[1]) || 1,
-      valor: parseValor(row[2]),
-      pago: row[3] === true || row[3] === 'TRUE' || row[3] === 'Sim'
-    };
-  });
-}
+async function resetarMes(){if(!confirm('Isso vai:\n- Desmarcar todos os pagamentos\n- Remover despesas variáveis dos gatos\n- Avançar parcela dos financiamentos\n\nContinuar?'))return;var r=await apiPost('resetarMes',{});if(r.success){toast('Mês resetado!','ok');carregarDados()}else toast(r.message,'err')}
 
-function adicionarContaFixa(conta) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Contas Fixas');
-    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Contas Fixas', ['Nome', 'Dia', 'Valor', 'Pago']);
-    sheet.appendRow([conta.nome, conta.dia || 1, conta.valor, false]);
-    return { success: true, message: 'Conta adicionada!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function removerContaFixa(nome) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Contas Fixas');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.deleteRow(i + 2);
-        return { success: true, message: 'Conta removida!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function marcarContaFixaPaga(nome, pago) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Contas Fixas');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.getRange(i + 2, 4).setValue(pago);
-        return { success: true, message: pago ? 'Pago!' : 'Desmarcado!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-// ==================== GATOS ====================
-function getGatos(ss) {
-  var sheet = ss.getSheetByName('Gatos');
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
-  return dados.filter(function(row) { return row[0]; }).map(function(row, i) {
-    return {
-      rowIndex: i + 2,
-      nome: String(row[0] || '').trim(),
-      tipo: String(row[1] || 'Fixo').trim(),
-      valor: parseValor(row[2]),
-      pago: row[3] === true || row[3] === 'TRUE' || row[3] === 'Sim'
-    };
-  });
-}
-
-function adicionarGato(gato) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Gatos');
-    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Gatos', ['Nome', 'Tipo', 'Valor', 'Pago']);
-    sheet.appendRow([gato.nome, gato.tipo || 'Fixo', gato.valor, false]);
-    return { success: true, message: 'Despesa de gato adicionada!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function removerGato(nome) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Gatos');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.deleteRow(i + 2);
-        return { success: true, message: 'Removido!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function marcarGatoPago(nome, pago) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Gatos');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.getRange(i + 2, 4).setValue(pago);
-        return { success: true, message: pago ? 'Pago!' : 'Desmarcado!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-// ==================== CARTÕES ====================
-function getCartoes(ss) {
-  var sheet = ss.getSheetByName('Cartões');
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
-  return dados.filter(function(row) { return row[0]; }).map(function(row) {
-    return {
-      nome: String(row[0] || '').trim(),
-      limite: parseValor(row[1]),
-      diaFechamento: parseInt(row[2]) || 1,
-      diaVencimento: parseInt(row[3]) || 10
-    };
-  });
-}
-
-function adicionarCartao(cartao) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Cartões');
-    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Cartões', ['Nome', 'Limite', 'Dia Fechamento', 'Dia Vencimento']);
-    sheet.appendRow([cartao.nome, cartao.limite, cartao.diaFechamento || 1, cartao.diaVencimento || 10]);
-    return { success: true, message: 'Cartão adicionado!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function removerCartao(nome) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Cartões');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.deleteRow(i + 2);
-        return { success: true, message: 'Cartão removido!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-// ==================== FINANCIAMENTOS ====================
-function getFinanciamentos(ss) {
-  var sheet = ss.getSheetByName('Financiamentos');
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 7).getValues();
-  return dados.filter(function(row) { return row[0] && row[6] !== false && row[6] !== 'FALSE'; }).map(function(row) {
-    return {
-      nome: String(row[0] || '').trim(),
-      valorTotal: parseValor(row[1]),
-      parcelas: parseInt(row[2]) || 1,
-      parcelaAtual: parseInt(row[3]) || 1,
-      valorParcela: parseValor(row[4]),
-      diaVencimento: parseInt(row[5]) || 1,
-      ativo: row[6] !== false && row[6] !== 'FALSE'
-    };
-  });
-}
-
-function adicionarFinanciamento(fin) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Financiamentos');
-    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Financiamentos', ['Nome', 'Valor Total', 'Parcelas', 'Parcela Atual', 'Valor Parcela', 'Dia Vencimento', 'Ativo']);
-    sheet.appendRow([fin.nome, fin.valorTotal, fin.parcelas, fin.parcelaAtual || 1, fin.valorParcela, fin.diaVencimento || 1, true]);
-    return { success: true, message: 'Financiamento adicionado!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function removerFinanciamento(nome) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Financiamentos');
-    if (!sheet || sheet.getLastRow() < 2) return { success: false, message: 'Não encontrado' };
-    var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    var nomeNorm = normalizar(nome);
-    for (var i = 0; i < dados.length; i++) {
-      if (normalizar(dados[i][0]) === nomeNorm) {
-        sheet.deleteRow(i + 2);
-        return { success: true, message: 'Financiamento removido!' };
-      }
-    }
-    return { success: false, message: 'Não encontrado' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-// ==================== HISTÓRICO ====================
-function getHistorico(ss) {
-  var sheet = ss.getSheetByName('Histórico');
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  var dados = sheet.getRange(2, 1, sheet.getLastRow() - 1, 9).getValues();
-  var resultado = [];
-  for (var i = 0; i < dados.length; i++) {
-    var row = dados[i];
-    if (!row[0]) continue;
-    var dataStr = formatarDataParaString(row[0]);
-    if (!dataStr) continue;
-    resultado.push({
-      rowIndex: i + 2,
-      data: dataStr,
-      tipo: String(row[1] || '').trim(),
-      categoria: String(row[2] || '').trim(),
-      descricao: String(row[3] || '').trim(),
-      valor: parseValor(row[4]),
-      formaPagamento: String(row[5] || '').trim(),
-      cartao: String(row[6] || '').trim(),
-      parcelas: parseInt(row[7]) || 1,
-      parcelaAtual: parseInt(row[8]) || 1
-    });
-  }
-  return resultado;
-}
-
-function adicionarLancamento(lancamento) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Histórico');
-    if (!sheet) sheet = criarAbaSeNaoExiste(ss, 'Histórico', ['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor', 'Forma Pagamento', 'Cartão', 'Parcelas', 'Parcela Atual']);
-    var dataFormatada = lancamento.data;
-    if (lancamento.data && lancamento.data.includes('-')) {
-      var parts = lancamento.data.split('-');
-      dataFormatada = new Date(parts[0], parts[1] - 1, parts[2]);
-    }
-    sheet.appendRow([
-      dataFormatada,
-      lancamento.tipo,
-      lancamento.categoria,
-      lancamento.descricao || '',
-      lancamento.valor,
-      lancamento.formaPagamento || '',
-      lancamento.cartao || '',
-      lancamento.parcelas || 1,
-      lancamento.parcelaAtual || 1
-    ]);
-    return { success: true, message: 'Lançamento adicionado!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-function removerLancamento(rowIndex) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Histórico');
-    if (!sheet || !rowIndex || rowIndex < 2 || rowIndex > sheet.getLastRow()) {
-      return { success: false, message: 'Lançamento não encontrado' };
-    }
-    sheet.deleteRow(rowIndex);
-    return { success: true, message: 'Lançamento removido!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
-
-// ==================== RESUMO ====================
-function calcularResumo(ss) {
-  var clientes = getClientes(ss);
-  var contasFixas = getContasFixas(ss);
-  var gatos = getGatos(ss);
-  var financiamentos = getFinanciamentos(ss);
-  
-  var totalEntradas = 0;
-  var totalRecebido = 0;
-  var totalSaidas = 0;
-  var totalPago = 0;
-  
-  // Entradas = Clientes
-  clientes.forEach(function(c) {
-    totalEntradas += c.valor;
-    if (c.pago) totalRecebido += c.valor;
-  });
-  
-  // Saídas = Contas Fixas + Gatos + Financiamentos
-  contasFixas.forEach(function(c) {
-    totalSaidas += c.valor;
-    if (c.pago) totalPago += c.valor;
-  });
-  
-  gatos.forEach(function(g) {
-    totalSaidas += g.valor;
-    if (g.pago) totalPago += g.valor;
-  });
-  
-  financiamentos.forEach(function(f) {
-    totalSaidas += f.valorParcela;
-  });
-  
-  return {
-    totalEntradas: totalEntradas,
-    totalRecebido: totalRecebido,
-    aReceber: totalEntradas - totalRecebido,
-    totalSaidas: totalSaidas,
-    totalPago: totalPago,
-    aPagar: totalSaidas - totalPago
-  };
-}
-
-// ==================== RESETAR MÊS ====================
-function resetarMes() {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    
-    // Resetar Clientes
-    var clientesSheet = ss.getSheetByName('Clientes');
-    if (clientesSheet && clientesSheet.getLastRow() >= 2) {
-      var range = clientesSheet.getRange(2, 5, clientesSheet.getLastRow() - 1, 1);
-      var valores = range.getValues().map(function() { return [false]; });
-      range.setValues(valores);
-    }
-    
-    // Resetar Contas Fixas
-    var contasSheet = ss.getSheetByName('Contas Fixas');
-    if (contasSheet && contasSheet.getLastRow() >= 2) {
-      var range = contasSheet.getRange(2, 4, contasSheet.getLastRow() - 1, 1);
-      var valores = range.getValues().map(function() { return [false]; });
-      range.setValues(valores);
-    }
-    
-    // Resetar Gatos (apenas fixos, variáveis são removidos)
-    var gatosSheet = ss.getSheetByName('Gatos');
-    if (gatosSheet && gatosSheet.getLastRow() >= 2) {
-      var dados = gatosSheet.getRange(2, 1, gatosSheet.getLastRow() - 1, 4).getValues();
-      for (var i = dados.length - 1; i >= 0; i--) {
-        if (normalizar(dados[i][1]) === 'variavel' || normalizar(dados[i][1]) === 'variável') {
-          gatosSheet.deleteRow(i + 2);
-        } else {
-          gatosSheet.getRange(i + 2, 4).setValue(false);
-        }
-      }
-    }
-    
-    // Atualizar parcela atual dos financiamentos
-    var finSheet = ss.getSheetByName('Financiamentos');
-    if (finSheet && finSheet.getLastRow() >= 2) {
-      var dados = finSheet.getRange(2, 1, finSheet.getLastRow() - 1, 7).getValues();
-      for (var i = 0; i < dados.length; i++) {
-        var parcelaAtual = parseInt(dados[i][3]) || 1;
-        var totalParcelas = parseInt(dados[i][2]) || 1;
-        var novaParcelaAtual = parcelaAtual + 1;
-        finSheet.getRange(i + 2, 4).setValue(novaParcelaAtual);
-        if (novaParcelaAtual > totalParcelas) {
-          finSheet.getRange(i + 2, 7).setValue(false);
-        }
-      }
-    }
-    
-    return { success: true, message: 'Mês resetado com sucesso!' };
-  } catch (error) {
-    return { success: false, message: error.toString() };
-  }
-}
+function toast(msg,type){var w=document.getElementById('toastWrap'),t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;w.appendChild(t);setTimeout(function(){t.remove()},3000)}
+</script>
+</body>
+</html>
